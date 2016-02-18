@@ -2,14 +2,15 @@
   <library name="GOPATH &lt;ugo&gt;">
     <CLASSES>
       <root url="file://$PROJECT_DIR$/../src/github.com" />
+      <root url="file://$PROJECT_DIR$/../src/.DS_Store" />
     </CLASSES>
     <JAVADOC />
     <SOURCES />
     <excluded>
+      <root url="file://$PROJECT_DIR$/../src/github.com/alxrm/ugo/.idea" />
+      <root url="file://$PROJECT_DIR$/../src/github.com/alxrm/ugo/.git" />
       <root url="file://$PROJECT_DIR$" />
       <root url="file://$PROJECT_DIR$/../src/github.com/franela/goblin/.git" />
-      <root url="file://$PROJECT_DIR$/../src/github.com/alxrm/ugo/.git" />
-      <root url="file://$PROJECT_DIR$/../src/github.com/alxrm/ugo/.idea" />
       <root url="file://$PROJECT_DIR$/../src/github.com/psilva261/timsort/.git" />
     </excluded>
   </library>

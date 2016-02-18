@@ -718,7 +718,7 @@ func Insert(seq Seq, target Object, position int) Seq {
 }
 
 /**
- concates another slice to the end of given slice
+ concatenates another slice to the end of given slice
 
  @param {Seq} seq
  @param {Seq} next
@@ -739,13 +739,7 @@ func Concat(seq, next Seq) Seq {
 */
 func Shuffle(seq Seq) Seq {
 	if seq == nil { return Seq{} }
-
-	for i := range seq {
-		j := Random(0, float64(i))
-		seq[i], seq[j] = seq[j], seq[i]
-	}
-
-	return seq
+	return createShuffle(seq)
 }
 
 /**
@@ -758,15 +752,10 @@ func ShuffledCopy(seq Seq) Seq {
 	if seq == nil { return Seq{} }
 
 	length := len(seq)
-	shuffled := NewSeq(length)
-	copy(shuffled, seq)
+	copied := NewSeq(length)
+	copy(copied, seq)
 
-	for i := range seq {
-		j := Random(0, float64(i))
-		shuffled[i], shuffled[j] = shuffled[j], shuffled[i]
-	}
-
-	return shuffled
+	return createShuffle(copied)
 }
 
 /**
@@ -780,11 +769,7 @@ func Reverse(seq Seq) Seq {
 
 	length := len(seq)
 
-	for left, right := 0, length - 1; left < right; left, right = left + 1, right - 1 {
-		seq[left], seq[right] = seq[right], seq[left]
-	}
-
-	return seq
+	return createReverse(seq, length)
 }
 
 /**
@@ -797,14 +782,10 @@ func ReversedCopy(seq Seq) Seq {
 	if seq == nil { return Seq{} }
 
 	length := len(seq)
-	reversed := NewSeq(length)
-	copy(reversed, seq)
+	copied := NewSeq(length)
+	copy(copied, seq)
 
-	for left, right := 0, length - 1; left < right; left, right = left + 1, right - 1 {
-		reversed[left], reversed[right] = reversed[right], reversed[left]
-	}
-
-	return reversed
+	return createReverse(copied, length)
 }
 
 /**
@@ -979,6 +960,23 @@ func createReduce(seq Seq, cb Collector, memo Object, startPoint, direction, len
 	}
 
 	return result
+}
+
+func createShuffle(seq Seq) Seq {
+	for i := range seq {
+		j := Random(0, float64(i))
+		seq[i], seq[j] = seq[j], seq[i]
+	}
+
+	return seq
+}
+
+func createReverse(seq Seq, length int) Seq {
+	for left, right := 0, length - 1; left < right; left, right = left + 1, right - 1 {
+		seq[left], seq[right] = seq[right], seq[left]
+	}
+
+	return seq
 }
 
 func createPredicateSearch(seq Seq, cb Predicate, startPoint, direction, length int) (res Object, resIndex int) {
