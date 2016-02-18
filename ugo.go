@@ -37,9 +37,7 @@ Action(cur, index, list Object)
 	@param {Seq} list
 */
 func Each(seq Seq, cb Action) {
-	if cb == nil {
-		return
-	}
+	if cb == nil { return }
 	for index, val := range seq {
 		cb(val, index, seq)
 	}
@@ -59,12 +57,8 @@ Callback(cur, index, list Object) Object
 	@return {Object} mutated element
 */
 func Map(seq Seq, cb Callback) Seq {
-	if seq == nil {
-		return nil
-	}
-	if cb == nil {
-		return seq
-	}
+	if seq == nil { return Seq{} }
+	if cb == nil { return seq }
 
 	length := len(seq)
 	result := NewSeq(length)
@@ -90,12 +84,8 @@ Predicate(cur, index, list Object) bool
 	@return {bool} whether element passed the Predicate check
 */
 func Filter(seq Seq, cb Predicate) Seq {
-	if seq == nil {
-		return nil
-	}
-	if cb == nil {
-		return seq
-	}
+	if seq == nil { return Seq{} }
+	if cb == nil { return seq }
 
 	result := NewSeq(0)
 
@@ -122,12 +112,8 @@ Predicate(cur, index, list Object) bool
 	@return {bool} whether element passed the Predicate check
 */
 func Reject(seq Seq, cb Predicate) Seq {
-	if seq == nil {
-		return nil
-	}
-	if cb == nil {
-		return seq
-	}
+	if seq == nil { return Seq{} }
+	if cb == nil { return seq }
 
 	return Filter(seq, negate(cb))
 }
@@ -339,9 +325,7 @@ Comparator(left, right Object) int
 	@return {int} -1 for less, 0 for equals, 1 for larger
 */
 func IndexOf(seq Seq, target Object, isSorted bool, cb Comparator) int {
-	if cb == nil {
-		return -1
-	}
+	if cb == nil { return -1 }
 
 	if isSorted {
 		_, index := createBinarySearch(seq, target, cb, len(seq))
@@ -367,9 +351,7 @@ Comparator(left, right Object) int
 	@return {int} -1 for less, 0 for equals, 1 for larger
 */
 func LastIndexOf(seq Seq, target Object, cb Comparator) int {
-	if cb == nil {
-		return -1
-	}
+	if cb == nil { return -1 }
 	var equalityPredicate Predicate = func(cur, _, _ Object) bool { return cb(cur, target) == 0 }
 	return FindLastIndex(seq, equalityPredicate)
 }
@@ -390,9 +372,7 @@ Comparator(left, right Object) int
 	@return {int} -1 for less, 0 for equals, 1 for larger
 */
 func Contains(seq Seq, target Object, isSorted bool, cb Comparator) bool {
-	if cb == nil {
-		return false
-	}
+	if cb == nil { return false }
 
 	return IndexOf(seq, target, isSorted, cb) != -1
 }
@@ -437,12 +417,8 @@ Comparator(left, right Object) int
 	@return {int} -1 for less, 0 for equals, 1 for larger
 */
 func Uniq(seq Seq, cb Comparator) Seq {
-	if seq == nil {
-		return nil
-	}
-	if cb == nil {
-		return seq
-	}
+	if seq == nil { return Seq{} }
+	if cb == nil { return seq }
 
 	result := NewSeq(0)
 	for _, value := range seq {
@@ -454,12 +430,12 @@ func Uniq(seq Seq, cb Comparator) Seq {
 }
 
 /**
-returns sorted slice, uses very powerful timsort* algorithm
-*timsort obtained from: https://github.com/psilva261/timsort
+returns the values from slice that are not present in the other slice
 
 @param {Seq} seq
+@param {Seq} other
 @param {Comparator} cb
-@return {Seq} resulting sorted slice
+@return {Seq} resulting slice
 
 
 Comparator(left, right Object) int
@@ -467,13 +443,118 @@ Comparator(left, right Object) int
 	@param {Object} right
 	@return {int} -1 for less, 0 for equals, 1 for larger
 */
+func Difference(seq, other Seq, cb Comparator) Seq {
+	if seq == nil { return Seq{} }
+	if cb == nil || other == nil { return Seq{} }
+
+	result := NewSeq(0)
+
+	for _, value := range seq {
+		if !Contains(other, value, false, cb) {
+			result = append(result, value)
+		}
+	}
+	return result
+}
+
+/**
+returns the Slice without all instances of nonGrata value
+
+@param {Seq} seq
+@param {Object} nonGrata
+@param {Comparator} cb
+@return {Seq} result
+
+
+Comparator(left, right Object) int
+	@param {Object} left
+	@param {Object} right
+	@return {int} -1 for less, 0 for equals, 1 for larger
+*/
+func Without(seq Seq, nonGrata Object, cb Comparator) Seq {
+	if seq == nil || cb == nil { return Seq{} }
+	if nonGrata == nil { return seq }
+
+	result := NewSeq(0)
+
+	for _, value := range seq {
+		if cb(value, nonGrata) != 0 {
+			result = append(result, value)
+		}
+	}
+
+	return result
+}
+
+/**
+returns the values that are intersection of two slices
+Each value in the result is present in each of the arrays.
+
+@param {Seq} seq
+@param {Seq} other
+@param {Comparator} cb
+@return {Seq} resulting intersection of slices
+
+
+Comparator(left, right Object) int
+	@param {Object} left
+	@param {Object} right
+	@return {int} -1 for less, 0 for equals, 1 for larger
+*/
+func Intersection(seq, other Seq, cb Comparator) Seq {
+	if seq == nil { return Seq{} }
+	if cb == nil || other == nil { return Seq{} }
+
+	result := NewSeq(0)
+
+	for _, value := range seq {
+		if Contains(other, value, false, cb) {
+			result = append(result, value)
+		}
+	}
+	return Uniq(result, cb);
+}
+
+/**
+returns the unique values that are union of two slices
+each value in the result appears at least once in one of the passed slices
+
+@param {Seq} seq
+@param {Seq} other
+@param {Comparator} cb
+@return {Seq} resulting intersection of slices
+
+
+Comparator(left, right Object) int
+	@param {Object} left
+	@param {Object} right
+	@return {int} -1 for less, 0 for equals, 1 for larger
+*/
+func Union(seq, other Seq, cb Comparator) Seq {
+	if seq == nil { return Seq{} }
+	if cb == nil { return Seq{} }
+
+	result := Concat(seq, other)
+
+	return Uniq(result, cb)
+}
+
+/**
+returns sorted slice, uses very powerful timsort* algorithm
+*timsort obtained from: https://github.com/psilva261/timsort
+
+@param {Seq} seq
+@param {Comparator} cb
+@return {Seq} resulting sorted slice
+
+Comparator(left, right Object) int
+	@param {Object} left
+	@param {Object} right
+	@return {int} -1 for less, 0 for equals, 1 for larger
+*/
 func SortBy(seq Seq, cb Comparator) Seq {
-	if seq == nil {
-		return nil
-	}
-	if cb == nil {
-		return seq
-	}
+	if seq == nil { return Seq{} }
+	if cb == nil { return seq }
 	sorter.Sort(seq, lessThan(cb))
 	return seq
 }
@@ -522,40 +603,125 @@ removes an element from given position in slice
 
 */
 func Remove(seq Seq, position int) Seq {
-	if seq == nil || position < 0 || position > len(seq) {
-		return seq
-	}
+	if seq == nil { return Seq{} }
+	position = fixPosition(position, len(seq) - 1)
 
-	return append(seq[:position], seq[position+1:]...)
+	return append(seq[:position], seq[position + 1:]...)
 }
 
 /**
-returns shuffled copy of passed slice
+inserts an element into given position in slice
+
+@param {Seq} seq
+@param {Object} target
+@param {int} position
+@return {Seq} slice, with new inserted element (target)
+
+*/
+func Insert(seq Seq, target Object, position int) Seq {
+	if seq == nil { return Seq{} }
+	position = fixPosition(position, len(seq))
+
+	seq = append(seq, 0)
+	copy(seq[position + 1:], seq[position:])
+	seq[position] = target
+
+	return seq
+}
+
+/**
+concates another slice to the end of given slice
+
+@param {Seq} seq
+@param {Seq} next
+@return {Seq} concatenated slice
+
+*/
+func Concat(seq, next Seq) Seq {
+	if seq == nil { return Seq{} }
+	if next == nil { return seq }
+
+	return append(seq, next...)
+}
+
+/**
+returns shuffled slice
+
+@param {Seq} seq
+@return {Seq} shuffled
+
+*/
+func Shuffle(seq Seq) Seq {
+	if seq == nil { return Seq{} }
+
+	for i := range seq {
+		j := Random(0, float64(i))
+		seq[i], seq[j] = seq[j], seq[i]
+	}
+
+	return seq
+}
+
+/**
+returns shuffled copy of slice
 
 @param {Seq} seq
 @return {Seq} shuffled copy
 
 */
-func Shuffle(seq Seq) Seq {
-	if seq == nil {
-		return nil
-	}
+func ShuffledCopy(seq Seq) Seq {
+	if seq == nil { return Seq{} }
 
-	rand.Seed(time.Now().UnixNano())
 	length := len(seq)
 	shuffled := NewSeq(length)
+	copy(shuffled, seq)
 
-	for index, random := 0, -1; index < length; index++ {
-		random = Random(0, float64(index))
-
-		if random != index {
-			shuffled[index] = shuffled[random]
-		}
-
-		shuffled[random] = seq[index]
+	for i := range seq {
+		j := Random(0, float64(i))
+		shuffled[i], shuffled[j] = shuffled[j], shuffled[i]
 	}
 
 	return shuffled
+}
+
+/**
+returns reversed slice
+
+@param {Seq} seq
+@return {Seq} reversed
+
+*/
+func Reverse(seq Seq) Seq {
+	if seq == nil { return Seq{} }
+
+	length := len(seq)
+
+	for left, right := 0, length - 1; left < right; left, right = left + 1, right - 1 {
+		seq[left], seq[right] = seq[right], seq[left]
+	}
+
+	return seq
+}
+
+/**
+returns reversed copy of slice
+
+@param {Seq} seq
+@return {Seq} reversed copy
+
+*/
+func ReversedCopy(seq Seq) Seq {
+	if seq == nil { return Seq{} }
+
+	length := len(seq)
+	reversed := NewSeq(length)
+	copy(reversed, seq)
+
+	for left, right := 0, length - 1; left < right; left, right = left + 1, right - 1 {
+		reversed[left], reversed[right] = reversed[right], reversed[left]
+	}
+
+	return reversed
 }
 
 /**
@@ -769,7 +935,7 @@ func createBinarySearch(sortedSeq Seq, target Object, cb Comparator, length int)
 	for lo < hi {
 		mid := (lo + hi) >> 1
 
-		if cb(target, sortedSeq[mid]) == 0 {
+		if cb(sortedSeq[mid], target) == 0 {
 			resIndex = mid
 			res = sortedSeq[mid]
 			break
@@ -800,6 +966,16 @@ func sgn(num int) int {
 		return 0
 	} else {
 		return 1
+	}
+}
+
+func fixPosition(pos, ableMax int) int {
+	if pos < 0 {
+		return 0
+	} else if pos > ableMax {
+		return ableMax
+	} else {
+		return pos
 	}
 }
 

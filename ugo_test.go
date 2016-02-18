@@ -1,7 +1,7 @@
 package ugo_test
 
 import (
-	. "github.com/alxrm/ugo"
+	. "../ugo"
 	. "github.com/franela/goblin"
 	"math"
 	"testing"
@@ -170,7 +170,6 @@ func TestSingleValues(t *testing.T) {
 func TestMultipleValues(t *testing.T) {
 	g := Goblin(t)
 
-	inSeq := Seq{2, 4, 6, 7, 8, 10, 120, 10, 2, 17}
 	intComparator := func(l, r Object) int { return l.(int) - r.(int) }
 	changingCallback := func(cur, _, _ Object) Object { return cur.(int) - 2 }
 	evenPredicate := func(cur, _, _ Object) bool { return cur.(int)%2 == 0 }
@@ -201,50 +200,59 @@ func TestMultipleValues(t *testing.T) {
 
 	g.Describe("#Map()", func() {
 		g.It("Should return changed elements", func() {
+			inSeq := Seq{2, 4, 6, 7, 8, 10, 120, 10, 2, 17}
 			outSeqChanged := Seq{0, 2, 4, 5, 6, 8, 118, 8, 0, 15}
+			empty := Seq{}
 
 			g.Assert(Map(inSeq, changingCallback)).Equal(outSeqChanged)
-			g.Assert(Map(nil, changingCallback)).Equal(Seq(nil))
+			g.Assert(Map(nil, changingCallback)).Equal(empty)
 			g.Assert(Map(inSeq, nil)).Equal(inSeq)
-			g.Assert(Map(nil, nil)).Equal(Seq(nil))
+			g.Assert(Map(nil, nil)).Equal(empty)
 		})
 	})
 
 	g.Describe("#Filter()", func() {
 		g.It("Should return filtered elements", func() {
+			inSeq := Seq{2, 4, 6, 7, 8, 10, 120, 10, 2, 17}
 			outSeqFiltered := Seq{2, 4, 6, 8, 10, 120, 10, 2}
+			empty := Seq{}
 
 			g.Assert(Filter(inSeq, evenPredicate)).Equal(outSeqFiltered)
 			g.Assert(Filter(inSeq, nil)).Equal(inSeq)
-			g.Assert(Filter(nil, evenPredicate)).Equal(Seq(nil))
-			g.Assert(Filter(nil, nil)).Equal(Seq(nil))
+			g.Assert(Filter(nil, evenPredicate)).Equal(empty)
+			g.Assert(Filter(nil, nil)).Equal(empty)
 		})
 	})
 
 	g.Describe("#Reject()", func() {
 		g.It("Should return values which NOT passed predicate test elements", func() {
+			inSeq := Seq{2, 4, 6, 7, 8, 10, 120, 10, 2, 17}
 			outSeqFiltered := Seq{7, 17}
+			empty := Seq{}
 
 			g.Assert(Reject(inSeq, evenPredicate)).Equal(outSeqFiltered)
 			g.Assert(Reject(inSeq, nil)).Equal(inSeq)
-			g.Assert(Reject(nil, evenPredicate)).Equal(Seq(nil))
-			g.Assert(Reject(nil, nil)).Equal(Seq(nil))
+			g.Assert(Reject(nil, evenPredicate)).Equal(empty)
+			g.Assert(Reject(nil, nil)).Equal(empty)
 		})
 	})
 
 	g.Describe("#SortBy()", func() {
 		g.It("Should return sorted Seq", func() {
+			inSeq := Seq{2, 4, 6, 7, 8, 10, 120, 10, 2, 17}
 			outSeqSorted := Seq{2, 2, 4, 6, 7, 8, 10, 10, 17, 120}
+			empty := Seq{}
 
 			g.Assert(SortBy(inSeq, intComparator)).Equal(outSeqSorted)
 			g.Assert(SortBy(inSeq, nil)).Equal(inSeq)
-			g.Assert(SortBy(nil, intComparator)).Equal(Seq(nil))
-			g.Assert(SortBy(nil, nil)).Equal(Seq(nil))
+			g.Assert(SortBy(nil, intComparator)).Equal(empty)
+			g.Assert(SortBy(nil, nil)).Equal(empty)
 		})
 	})
 
 	g.Describe("#CountBy()", func() {
 		g.It("Should return map with countings, e. g. keys - callback result, value - number of same results", func() {
+			inSeq := Seq{2, 4, 6, 7, 8, 10, 120, 10, 2, 17}
 			outMapCounted := map[string]int{"even": 8, "odd": 2}
 
 			g.Assert(CountBy(inSeq, evenCallback)).Equal(outMapCounted)
@@ -256,21 +264,96 @@ func TestMultipleValues(t *testing.T) {
 
 	g.Describe("#Remove()", func() {
 		g.It("Should return Seq without value in given index", func() {
-			outSeqRemoved := Seq{2, 2, 6, 7, 8, 10, 10, 17, 120}
+			inSeq := Seq{2, 4, 6, 7, 8, 10, 120, 10, 2, 17}
+			outSeqRemoved := Seq{2, 4, 7, 8, 10, 120, 10, 2, 17}
+			outSeqRemovedFirst := Seq{ 4, 7, 8, 10, 120, 10, 2, 17}
+			outSeqRemovedLast := Seq{ 4, 7, 8, 10, 120, 10, 2 }
+			empty := Seq{}
 
 			g.Assert(Remove(inSeq, 2)).Equal(outSeqRemoved)
-			g.Assert(Remove(inSeq, -1)).Equal(inSeq)
-			g.Assert(Remove(inSeq, 30)).Equal(inSeq)
-			g.Assert(Remove(nil, -1)).Equal(Seq(nil))
+			g.Assert(Remove(outSeqRemoved, -1)).Equal(outSeqRemovedFirst)
+			g.Assert(Remove(outSeqRemovedFirst, 30)).Equal(outSeqRemovedLast)
+			g.Assert(Remove(nil, -1)).Equal(empty)
+		})
+	})
+
+	g.Describe("#Insert()", func() {
+		g.It("Should return Seq with new value inserted to given index", func() {
+			inSeq := Seq{2, 4, 6, 7, 8, 10}
+			outSeqInserted := Seq{2, 20, 4, 6, 7, 8, 10}
+			outSeqInsertedFirst := Seq{92, 2, 20, 4, 6, 7, 8, 10}
+			outSeqInsertedLast := Seq{92, 2, 20, 4, 6, 7, 8, 10, 22}
+			empty := Seq{}
+
+			g.Assert(Insert(inSeq, 20, 1)).Equal(outSeqInserted)
+			g.Assert(Insert(outSeqInserted, 92, -1)).Equal(outSeqInsertedFirst)
+			g.Assert(Insert(outSeqInsertedFirst, 22, 30)).Equal(outSeqInsertedLast)
+			g.Assert(Insert(nil, nil, -1)).Equal(empty)
+		})
+	})
+
+	g.Describe("#Concat()", func() {
+		g.It("Should return slice, with appended another slice", func() {
+			inSeq := Seq{2, 4, 6, 7, 8, 10}
+			nextSeq := Seq{777, 1992}
+			outSeq := Seq{2, 4, 6, 7, 8, 10, 777, 1992}
+			empty := Seq{}
+
+			g.Assert(Concat(inSeq, nextSeq)).Equal(outSeq)
+			g.Assert(Concat(inSeq, nil)).Equal(inSeq)
+			g.Assert(Concat(nil, outSeq)).Equal(empty)
+			g.Assert(Concat(nil, nil)).Equal(empty)
 		})
 	})
 
 	g.Describe("#Shuffle()", func() {
 		g.It("Should return shuffled Seq", func() {
-			g.Assert(EqualsStrict(Shuffle(inSeq), inSeq, intComparator)).IsFalse()
-			g.Assert(EqualsNotStrict(Shuffle(inSeq), inSeq, intComparator)).IsTrue()
-			g.Assert(Shuffle(Seq{})).Equal(Seq{})
-			g.Assert(Shuffle(nil)).Equal(Seq(nil))
+			inSeq := Seq{2, 4, 6, 7, 8, 10, 120, 10, 2, 17}
+			inSeqCopy := Seq{2, 4, 6, 7, 8, 10, 120, 10, 2, 17}
+			empty := Seq{}
+
+			g.Assert(EqualsStrict(Shuffle(inSeq), inSeqCopy, intComparator)).IsFalse()
+			g.Assert(EqualsNotStrict(Shuffle(inSeq), inSeqCopy, intComparator)).IsTrue()
+			g.Assert(Shuffle(empty)).Equal(empty)
+			g.Assert(Shuffle(nil)).Equal(empty)
+		})
+	})
+
+
+	g.Describe("#ShuffledCopy()", func() {
+		g.It("Should return shuffled copy of Seq", func() {
+			inSeq := Seq{2, 4, 6, 7, 8, 10, 120, 10, 2, 17}
+			empty := Seq{}
+
+			g.Assert(EqualsStrict(ShuffledCopy(inSeq), inSeq, intComparator)).IsFalse()
+			g.Assert(EqualsNotStrict(ShuffledCopy(inSeq), inSeq, intComparator)).IsTrue()
+			g.Assert(ShuffledCopy(empty)).Equal(empty)
+			g.Assert(ShuffledCopy(nil)).Equal(empty)
+		})
+	})
+
+	g.Describe("#Reverse()", func() {
+		g.It("Should return reversed Seq", func() {
+			inSeq := Seq{2, 4, 6, 7, 8, 10, 120, 10, 2, 17}
+			outSeq := Seq{17, 2, 10, 120, 10, 8, 7, 6, 4, 2}
+			empty := Seq{}
+
+			g.Assert(Reverse(inSeq)).Equal(outSeq)
+			g.Assert(Reverse(empty)).Equal(empty)
+			g.Assert(Reverse(nil)).Equal(empty)
+		})
+	})
+
+	g.Describe("#ReversedCopy()", func() {
+		g.It("Should return reversed copy of Seq", func() {
+			inSeq := Seq{2, 4, 6, 7, 8, 10, 120, 10, 2, 17}
+			outSeq := Seq{17, 2, 10, 120, 10, 8, 7, 6, 4, 2}
+			empty := Seq{}
+
+			g.Assert(ReversedCopy(inSeq)).Equal(outSeq)
+			g.Assert(EqualsNotStrict(ReversedCopy(inSeq), inSeq, intComparator)).IsTrue()
+			g.Assert(ReversedCopy(empty)).Equal(empty)
+			g.Assert(ReversedCopy(nil)).Equal(empty)
 		})
 	})
 
@@ -278,11 +361,80 @@ func TestMultipleValues(t *testing.T) {
 		g.It("Should return Seq with no duplicates", func() {
 			inSeq := Seq{2, 4, 6, 7, 8, 10, 120, 10, 2, 17}
 			outSeqUniq := Seq{2, 4, 6, 7, 8, 10, 120, 17}
+			empty := Seq{}
 
 			g.Assert(Uniq(inSeq, intComparator)).Equal(outSeqUniq)
 			g.Assert(Uniq(inSeq, nil)).Equal(inSeq)
-			g.Assert(Uniq(nil, intComparator)).Equal(Seq(nil))
-			g.Assert(Uniq(nil, nil)).Equal(Seq(nil))
+			g.Assert(Uniq(nil, intComparator)).Equal(empty)
+			g.Assert(Uniq(nil, nil)).Equal(empty)
+		})
+	})
+
+	g.Describe("#Difference()", func() {
+		g.It("Should return Seq with elements, that are not in the other Seq", func() {
+			inSeq := Seq{ 2, 4, 6, 9, 9, 7 }
+			difSeq := Seq{ 2, 4, 8, 10, 17, 9, 2 }
+			out := Seq{ 6, 7 }
+			empty := Seq{}
+
+			g.Assert(Difference(inSeq, difSeq, intComparator)).Equal(out)
+			g.Assert(Difference(inSeq, nil, intComparator)).Equal(empty)
+			g.Assert(Difference(nil, difSeq, intComparator)).Equal(empty)
+			g.Assert(Difference(inSeq, difSeq, nil)).Equal(empty)
+			g.Assert(Difference(nil, nil, intComparator)).Equal(empty)
+			g.Assert(Difference(inSeq, nil, nil)).Equal(empty)
+			g.Assert(Difference(nil, difSeq, nil)).Equal(empty)
+		})
+	})
+
+	g.Describe("#Intersection()", func() {
+		g.It("Should return the intersection of Slices", func() {
+			inSeq := Seq{ 2, 4, 6, 9, 9, 7 }
+			difSeq := Seq{ 2, 4, 8, 10, 17, 9, 2 }
+			out := Seq{ 2, 4, 9 }
+			empty := Seq{}
+
+			g.Assert(Intersection(inSeq, difSeq, intComparator)).Equal(out)
+			g.Assert(Intersection(inSeq, nil, intComparator)).Equal(empty)
+			g.Assert(Intersection(nil, difSeq, intComparator)).Equal(empty)
+			g.Assert(Intersection(inSeq, difSeq, nil)).Equal(empty)
+			g.Assert(Intersection(nil, nil, intComparator)).Equal(empty)
+			g.Assert(Intersection(inSeq, nil, nil)).Equal(empty)
+			g.Assert(Intersection(nil, difSeq, nil)).Equal(empty)
+		})
+	})
+
+	g.Describe("#Union()", func() {
+		g.It("Should return unique values, that at least once appeared in any of slices", func() {
+			inSeq := Seq{ 2, 4, 6, 9, 9, 7 }
+			difSeq := Seq{ 2, 4, 8, 10, 17, 9, 2 }
+			out := Seq{ 2, 4, 6, 9, 7, 8, 10, 17 }
+			empty := Seq{}
+
+			g.Assert(Union(inSeq, difSeq, intComparator)).Equal(out)
+			g.Assert(Union(inSeq, nil, intComparator)).Equal(Uniq(inSeq, intComparator))
+			g.Assert(Union(nil, difSeq, intComparator)).Equal(empty)
+			g.Assert(Union(inSeq, difSeq, nil)).Equal(empty)
+			g.Assert(Union(nil, nil, intComparator)).Equal(empty)
+			g.Assert(Union(inSeq, nil, nil)).Equal(empty)
+			g.Assert(Union(nil, difSeq, nil)).Equal(empty)
+		})
+	})
+
+	g.Describe("#Without()", func() {
+		g.It("Should return the Seq without all instances of passed value", func() {
+			inSeq := Seq{ 2, 4, 6, 9, 9, 7, 9, 10, 1, 9 }
+			without := 9
+			out := Seq{ 2, 4, 6, 7, 10, 1 }
+			empty := Seq{}
+
+			g.Assert(Without(inSeq, without, intComparator)).Equal(out)
+			g.Assert(Without(inSeq, nil, intComparator)).Equal(inSeq)
+			g.Assert(Without(nil, without, intComparator)).Equal(empty)
+			g.Assert(Without(inSeq, without, nil)).Equal(empty)
+			g.Assert(Without(nil, nil, intComparator)).Equal(empty)
+			g.Assert(Without(inSeq, nil, nil)).Equal(empty)
+			g.Assert(Without(nil, without, nil)).Equal(empty)
 		})
 	})
 }
@@ -297,6 +449,7 @@ func TestUtils(t *testing.T) {
 			g.Assert(Random(0, 0)).Equal(0)
 			g.Assert(Random(math.Inf(-1), math.Inf(-1))).Equal(0)
 			g.Assert(Random(math.Inf(-1), math.Inf(1)) != int(math.Inf(-1))).IsTrue()
+			g.Assert(Random(math.Inf(-1), math.Inf(1)) != 0).IsTrue()
 		})
 	})
 
