@@ -64,11 +64,11 @@ type Seq []interface{}
 // An alias type for Callback function, which has following args:
 //
 // * Object memo
-
+//
 // * Object current
-
+//
 // * int index
-
+//
 // * Seq list
 //
 // * returns Object: memo, modified after some iteration
@@ -77,9 +77,9 @@ type Collector func(memo, current, currentKey, src Object) Object
 // An alias type for Callback function, which has following args:
 //
 // * Object current
-
+//
 // * int index
-
+//
 // * Seq list
 //
 // * returns Object: modified Seq element
@@ -88,7 +88,7 @@ type Callback func(current, currentKey, src Object) Object
 // An alias type for Predicate function, which has following args:
 //
 // * Object left
-
+//
 // * Object right
 //
 // * returns int: -1 for less, 0 for equals, 1 for larger
@@ -97,9 +97,9 @@ type Comparator func(left, right Object) int
 // An alias type for Predicate function, which has following args:
 //
 // * Object current
-
+//
 // * int index
-
+//
 // * Seq list
 //
 // * returns bool: true if check has been passed
@@ -108,9 +108,9 @@ type Predicate func(current, currentKey, src Object) bool
 // An alias type for Action function, which has following args:
 //
 // * Object current
-
+//
 // * int index
-
+//
 // * Seq list
 type Action func(current, currentKey, src Object)
 
