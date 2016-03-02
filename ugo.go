@@ -26,22 +26,23 @@ SOFTWARE.
 // Package ugo is a toolbox, inspired by underscore.js
 // This package provide some of the underscore most used functions
 //
-// Usage
+// Usage:
+//
 //
 //  package main
 //
 //  import (
-//  	u "github.com/alxrm/ugo"
+//    u "github.com/alxrm/ugo"
 //  )
 //
 //  func main() {
-//		strArr := u.Seq{ "nineteen", "three", "eleven", "five", "seventy", "six", "seven", "one" }
+//	  strArr := u.Seq{ "nineteen", "three", "eleven", "five", "seventy", "six", "seven", "one" }
 //
-//		lengths := u.Map(strArr, func(cur, _, _ u.Object) u.Object {
-//			return len(cur.(string))
-//		})
+//	  lengths := u.Map(strArr, func(cur, _, _ u.Object) u.Object {
+//	  	return len(cur.(string))
+//	  })
 //
-//		fmt.Println(lengths) // Output: [8 5 6 4 7 3 5 3]
+//	  fmt.Println(lengths) // Output: [8 5 6 4 7 3 5 3]
 //  }
 package ugo
 
@@ -53,68 +54,54 @@ import (
 	"time"
 )
 
-/**
- An alias type for interface{}
-*/
+// An alias type for interface{}
 type Object interface{}
 
-/**
- An alias type for (generic) interface{} slice
-*/
+// An alias type for (generic) interface{} slice
 type Seq []interface{}
 
 
-/**
- An alias type for Callback function, which has following args:
-
- - Object memo
- - Object current
- - int index
- - Seq list
-
- - returns Object: memo, modified after some iteration
-*/
+// An alias type for Callback function, which has following args:
+//
+// * Object memo
+// * Object current
+// * int index
+// * Seq list
+//
+// * returns Object: memo, modified after some iteration
 type Collector func(memo, current, currentKey, src Object) Object
 
-/**
- An alias type for Callback function, which has following args:
-
- - Object current
- - int index
- - Seq list
-
- - returns Object: modified Seq element
-*/
+// An alias type for Callback function, which has following args:
+//
+// * Object current
+// * int index
+// * Seq list
+//
+// * returns Object: modified Seq element
 type Callback func(current, currentKey, src Object) Object
 
-/**
- An alias type for Predicate function, which has following args:
-
- - Object left
- - Object right
-
- - returns int: -1 for less, 0 for equals, 1 for larger
-*/
+// An alias type for Predicate function, which has following args:
+//
+// * Object left
+// * Object right
+//
+// * returns int: -1 for less, 0 for equals, 1 for larger
 type Comparator func(left, right Object) int
 
-/**
- An alias type for Predicate function, which has following args:
-
- - Object current
- - int index
- - Seq list
-
- - returns bool: true if check has been passed
-*/
+// An alias type for Predicate function, which has following args:
+//
+// * Object current
+// * int index
+// * Seq list
+//
+// * returns bool: true if check has been passed
 type Predicate func(current, currentKey, src Object) bool
 
-/**
- An alias type for Action function, which has following args:
-
- - Object current
- - int index
- - Seq list
-*/
+// An alias type for Action function, which has following args:
+//
+// * Object current
+// * int index
+// * Seq list
 type Action func(current, currentKey, src Object)
 
 
@@ -129,16 +116,12 @@ const (
 	_LARGER = 1
 )
 
-/**
- creates new Seq aliased slice with given size
-*/
+// creates new Seq aliased slice with given size
 func NewSeq(size int) Seq {
 	return make(Seq, size)
 }
 
-/**
- Calls cb Action on each element
-*/
+// Calls cb Action on each element
 func Each(seq Seq, cb Action) {
 	if cb == nil { return }
 	for index, val := range seq {
@@ -146,9 +129,7 @@ func Each(seq Seq, cb Action) {
 	}
 }
 
-/**
- Creates new slice same size, every element is the result of Callback
-*/
+// Creates new slice same size, every element is the result of Callback
 func Map(seq Seq, cb Callback) Seq {
 	if seq == nil { return Seq{} }
 	if cb == nil { return seq }
@@ -163,9 +144,7 @@ func Map(seq Seq, cb Callback) Seq {
 	return result
 }
 
-/**
- Creates new slice, contains only elements that passed Predicate check
-*/
+// Creates new slice, contains only elements that passed Predicate check
 func Filter(seq Seq, cb Predicate) Seq {
 	if seq == nil { return Seq{} }
 	if cb == nil { return seq }
@@ -181,9 +160,7 @@ func Filter(seq Seq, cb Predicate) Seq {
 	return result
 }
 
-/**
- Creates new slice, contains only elements that h passed Predicate check
-*/
+// Creates new slice, contains only elements that h passed Predicate check
 func Reject(seq Seq, cb Predicate) Seq {
 	if seq == nil { return Seq{} }
 	if cb == nil { return seq }
@@ -191,9 +168,7 @@ func Reject(seq Seq, cb Predicate) Seq {
 	return Filter(seq, negate(cb))
 }
 
-/**
- Makes single value from all of the slice elements, iterating from left
-*/
+// Makes single value from all of the slice elements, iterating from left
 func Reduce(seq Seq, cb Collector, initial Object) Object {
 	var memo Object = nil
 
@@ -212,9 +187,7 @@ func Reduce(seq Seq, cb Collector, initial Object) Object {
 	}
 }
 
-/**
- Makes single value from all of the slice elements, iterating from right
-*/
+// Makes single value from all of the slice elements, iterating from right
 func ReduceRight(seq Seq, cb Collector, initial Object) Object {
 	var memo Object = nil
 
@@ -233,67 +206,51 @@ func ReduceRight(seq Seq, cb Collector, initial Object) Object {
 	}
 }
 
-/**
- returns min value from slice, calculated in comparator
-*/
+// returns min value from slice, calculated in comparator
 func Min(seq Seq, cb Comparator) Object {
 	return createComparingIterator(seq, cb, _DIRECTION_TO_MIN, len(seq))
 }
 
-/**
- returns max value from slice, calculated in comparator
-*/
+// returns max value from slice, calculated in comparator
 func Max(seq Seq, cb Comparator) Object {
 	return createComparingIterator(seq, cb, _DIRECTION_TO_MAX, len(seq))
 }
 
-/**
- returns first found value, passed the predicate check
-*/
+// returns first found value, passed the predicate check
 func Find(seq Seq, cb Predicate) Object {
 	length := len(seq) - 1
 	res, _ := createPredicateSearch(seq, cb, 0, _DIRECTION_TO_MAX, length)
 	return res
 }
 
-/**
- returns last found value, passed the predicate check
-*/
+// returns last found value, passed the predicate check
 func FindLast(seq Seq, cb Predicate) Object {
 	length := len(seq) - 1
 	res, _ := createPredicateSearch(seq, cb, length, _DIRECTION_TO_MIN, length)
 	return res
 }
 
-/**
- returns first found index, which value passed the predicate check
-*/
+// returns first found index, which value passed the predicate check
 func FindIndex(seq Seq, cb Predicate) int {
 	length := len(seq) - 1
 	_, index := createPredicateSearch(seq, cb, 0, _DIRECTION_TO_MAX, length)
 	return index
 }
 
-/**
- returns last found index, which value passed the predicate check
-*/
+// returns last found index, which value passed the predicate check
 func FindLastIndex(seq Seq, cb Predicate) int {
 	length := len(seq) - 1
 	_, index := createPredicateSearch(seq, cb, length, _DIRECTION_TO_MIN, length)
 	return index
 }
 
-/**
- returns true if at least one element passed the predicate check
-*/
+// returns true if at least one element passed the predicate check
 func Some(seq Seq, cb Predicate) bool {
 	return FindIndex(seq, cb) != -1
 }
 
-/**
- founds index of the first element, which equals to passed one(target)
- NOTE: if slice is sorted, this method can use better search algorithm
-*/
+// founds index of the first element, which equals to passed one(target)
+// NOTE: if slice is sorted, this method can use better search algorithm
 func IndexOf(seq Seq, target Object, isSorted bool, cb Comparator) int {
 	if cb == nil { return -1 }
 
@@ -306,28 +263,22 @@ func IndexOf(seq Seq, target Object, isSorted bool, cb Comparator) int {
 	}
 }
 
-/**
- founds index of the last element, which equals to passed one(target)
-*/
+// founds index of the last element, which equals to passed one(target)
 func LastIndexOf(seq Seq, target Object, cb Comparator) int {
 	if cb == nil { return -1 }
 	var equalityPredicate Predicate = func(cur, _, _ Object) bool { return cb(cur, target) == 0 }
 	return FindLastIndex(seq, equalityPredicate)
 }
 
-/**
- returns true if slice contains element, which equals to passed one(target)
- NOTE: if slice is sorted, this method can use better search algorithm
-*/
+// returns true if slice contains element, which equals to passed one(target)
+// NOTE: if slice is sorted, this method can use better search algorithm
 func Contains(seq Seq, target Object, isSorted bool, cb Comparator) bool {
 	if cb == nil { return false }
 
 	return IndexOf(seq, target, isSorted, cb) != -1
 }
 
-/**
- returns true if every element in slice have passed the predicate test
-*/
+// returns true if every element in slice have passed the predicate test
 func Every(seq Seq, cb Predicate) bool {
 	if IsEmpty(seq) || cb == nil {
 		return false
@@ -341,9 +292,7 @@ func Every(seq Seq, cb Predicate) bool {
 	return true
 }
 
-/**
- returns slice, which contains only unique elements, calculated by Comparator
-*/
+// returns slice, which contains only unique elements, calculated by Comparator
 func Uniq(seq Seq, cb Comparator) Seq {
 	if seq == nil { return Seq{} }
 	if cb == nil { return seq }
@@ -357,9 +306,7 @@ func Uniq(seq Seq, cb Comparator) Seq {
 	return result
 }
 
-/**
- returns the values from slice that are not present in the other slice
-*/
+// returns the values from slice that are not present in the other slice
 func Difference(seq, other Seq, cb Comparator) Seq {
 	if seq == nil { return Seq{} }
 	if cb == nil || other == nil { return Seq{} }
@@ -374,9 +321,7 @@ func Difference(seq, other Seq, cb Comparator) Seq {
 	return result
 }
 
-/**
- returns the Slice without all instances of nonGrata value
-*/
+// returns the Slice without all instances of nonGrata value
 func Without(seq Seq, nonGrata Object, cb Comparator) Seq {
 	if seq == nil || cb == nil { return Seq{} }
 	if nonGrata == nil { return seq }
@@ -392,10 +337,8 @@ func Without(seq Seq, nonGrata Object, cb Comparator) Seq {
 	return result
 }
 
-/**
- returns the values that are intersection of two slices
- Each value in the result is present in each of the arrays.
-*/
+// returns the values that are intersection of two slices
+// Each value in the result is present in each of the arrays.
 func Intersection(seq, other Seq, cb Comparator) Seq {
 	if seq == nil { return Seq{} }
 	if cb == nil || other == nil { return Seq{} }
@@ -410,10 +353,8 @@ func Intersection(seq, other Seq, cb Comparator) Seq {
 	return Uniq(result, cb);
 }
 
-/**
- returns the unique values that are union of two slices
- each value in the result appears at least once in one of the passed slices
-*/
+// returns the unique values that are union of two slices
+// each value in the result appears at least once in one of the passed slices
 func Union(seq, other Seq, cb Comparator) Seq {
 	if seq == nil { return Seq{} }
 	if cb == nil { return Seq{} }
@@ -423,10 +364,8 @@ func Union(seq, other Seq, cb Comparator) Seq {
 	return Uniq(result, cb)
 }
 
-/**
- returns sorted slice, uses very powerful timsort* algorithm
- *timsort obtained from: https://github.com/psilva261/timsort
-*/
+// returns sorted slice, uses very powerful timsort* algorithm
+// *timsort obtained from: https://github.com/psilva261/timsort
 func SortBy(seq Seq, cb Comparator) Seq {
 	if seq == nil { return Seq{} }
 	if cb == nil { return seq }
@@ -434,10 +373,8 @@ func SortBy(seq Seq, cb Comparator) Seq {
 	return seq
 }
 
-/**
- returns map, which values are count of certain kind of values,
- and keys are names of this kinds
-*/
+// returns map, which values are count of certain kind of values,
+// and keys are names of this kinds
 func CountBy(seq Seq, cb Callback) (result map[string]int) {
 	if seq == nil || cb == nil {
 		return nil
@@ -459,9 +396,7 @@ func CountBy(seq Seq, cb Callback) (result map[string]int) {
 	return result
 }
 
-/**
- removes an element from given position in slice
-*/
+// removes an element from given position in slice
 func Remove(seq Seq, position int) Seq {
 	if seq == nil { return Seq{} }
 	position = fixPosition(position, len(seq) - 1)
@@ -469,9 +404,7 @@ func Remove(seq Seq, position int) Seq {
 	return append(seq[:position], seq[position + 1:]...)
 }
 
-/**
- inserts an element into given position in slice
-*/
+// inserts an element into given position in slice
 func Insert(seq Seq, target Object, position int) Seq {
 	if seq == nil { return Seq{} }
 	position = fixPosition(position, len(seq))
@@ -483,9 +416,7 @@ func Insert(seq Seq, target Object, position int) Seq {
 	return seq
 }
 
-/**
- adds another slice to the end of given slice
-*/
+// adds another slice to the end of given slice
 func Concat(seq, next Seq) Seq {
 	if seq == nil { return Seq{} }
 	if next == nil { return seq }
@@ -493,17 +424,14 @@ func Concat(seq, next Seq) Seq {
 	return append(seq, next...)
 }
 
-/**
- returns shuffled slice
-*/
+
+// returns shuffled slice
 func Shuffle(seq Seq) Seq {
 	if seq == nil { return Seq{} }
 	return createShuffle(seq)
 }
 
-/**
- returns shuffled copy of slice
-*/
+// returns shuffled copy of slice
 func ShuffledCopy(seq Seq) Seq {
 	if seq == nil { return Seq{} }
 
@@ -514,9 +442,7 @@ func ShuffledCopy(seq Seq) Seq {
 	return createShuffle(copied)
 }
 
-/**
- returns reversed slice
-*/
+// returns reversed slice
 func Reverse(seq Seq) Seq {
 	if seq == nil { return Seq{} }
 
@@ -525,9 +451,8 @@ func Reverse(seq Seq) Seq {
 	return createReverse(seq, length)
 }
 
-/**
- returns reversed copy of slice
-*/
+
+// returns reversed copy of slice
 func ReversedCopy(seq Seq) Seq {
 	if seq == nil { return Seq{} }
 
@@ -538,10 +463,8 @@ func ReversedCopy(seq Seq) Seq {
 	return createReverse(copied, length)
 }
 
-/**
- checks whether both of the given slices are strictly equal,
- e. g. they got the same values in the same positions
-*/
+// checks whether both of the given slices are strictly equal,
+// e. g. they got the same values in the same positions
 func EqualsStrict(seqLeft, seqRight Seq, cb Comparator) bool {
 	if len(seqLeft) != len(seqRight) || cb == nil {
 		return false
@@ -556,10 +479,8 @@ func EqualsStrict(seqLeft, seqRight Seq, cb Comparator) bool {
 	return true
 }
 
-/**
- checks whether both of the given slices are equal, but not strictly,
- e. g. they the same values, but positions can be different
-*/
+// checks whether both of the given slices are equal, but not strictly,
+// e. g. they the same values, but positions can be different
 func EqualsNotStrict(seqLeft, seqRight Seq, cb Comparator) bool {
 	lengthLeft := len(seqLeft)
 	lengthRight := len(seqRight)
@@ -585,9 +506,7 @@ func EqualsNotStrict(seqLeft, seqRight Seq, cb Comparator) bool {
 
 /* Utils */
 
-/**
- return the random number in given range
-*/
+// return the random number in given range
 func Random(min, max float64) int {
 	if min == max {
 		return 0
@@ -609,24 +528,18 @@ func Random(min, max float64) int {
 	return int(res)
 }
 
-/**
- returns true if given slice has zero length or it's to nil
-*/
+// returns true if given slice has zero length or it's to nil
 func IsEmpty(seq Seq) bool {
 	return seq == nil || len(seq) == 0
 }
 
-/**
- returns true if given object has type of slice
-*/
+// returns true if given object has type of slice
 func IsSlice(target Object) bool {
 	return reflect.ValueOf(target).Kind() == reflect.Slice
 }
 
-/**
- returns Seq from given object, filling the resulting Seq via reflection
- NOTE: You should possibly avoid using this one
-*/
+// returns Seq from given object, filling the resulting Seq via reflection
+// NOTE: You should possibly avoid using this one
 func From(target Object, size int) Seq {
 	if !IsSlice(target) || size < 0 {
 		return Seq{}
@@ -652,11 +565,11 @@ func createComparingIterator(seq Seq, cb Comparator, dir, length int) Object {
 
 	lastComputed = seq[0]
 
-	for left, right := 0, length - 1; left < right; left, right = left + 1, right - 1 {
-		if sgn(cb(seq[left], seq[right])) == _LESS {
-			innerComputed = seq[right]
-		} else {
+	for left, right := 0, length - 1; left <= right; left, right = left + 1, right - 1 {
+		if sgn(cb(seq[left], seq[right])) == dir {
 			innerComputed = seq[left]
+		} else {
+			innerComputed = seq[right]
 		}
 
 		if sgn(cb(innerComputed, lastComputed)) == dir {

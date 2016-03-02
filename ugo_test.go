@@ -42,27 +42,27 @@ func TestSingleValues(t *testing.T) {
 
 	g.Describe("#Min()", func() {
 		g.It("Should return min value ", func() {
-			g.Assert(Min(inSeq, intComparator)).Equal(2)
+			g.Assert(Min(inSeqDifOrder, intComparator)).Equal(2)
 			g.Assert(Min(nil, intComparator)).Equal(-1)
-			g.Assert(Min(inSeq, nil)).Equal(-1)
+			g.Assert(Min(inSeqDifOrder, nil)).Equal(-1)
 			g.Assert(Min(nil, nil)).Equal(-1)
 		})
 	})
 
 	g.Describe("#Max()", func() {
 		g.It("Should return max value ", func() {
-			g.Assert(Max(inSeq, intComparator)).Equal(120)
+			g.Assert(Max(inSeqDifOrder, intComparator)).Equal(120)
 			g.Assert(Max(nil, intComparator)).Equal(-1)
-			g.Assert(Max(inSeq, nil)).Equal(-1)
+			g.Assert(Max(inSeqDifOrder, nil)).Equal(-1)
 			g.Assert(Max(nil, nil)).Equal(-1)
 		})
 	})
 
 	g.Describe("#Reduce()", func() {
 		g.It("Should return sum of slice elements", func() {
-			g.Assert(Reduce(inSeq, reduceCollector, 0)).Equal(186)
-			g.Assert(Reduce(inSeq, reduceCollector, nil)).Equal(186)
-			g.Assert(Reduce(inSeq, nil, nil)).Equal(nil)
+			g.Assert(Reduce(inSeqDifOrder, reduceCollector, 0)).Equal(186)
+			g.Assert(Reduce(inSeqDifOrder, reduceCollector, nil)).Equal(186)
+			g.Assert(Reduce(inSeqDifOrder, nil, nil)).Equal(nil)
 			g.Assert(Reduce(nil, nil, nil)).Equal(nil)
 		})
 	})
@@ -196,9 +196,9 @@ func TestMultipleValues(t *testing.T) {
 
 	intComparator := func(l, r Object) int { return l.(int) - r.(int) }
 	changingCallback := func(cur, _, _ Object) Object { return cur.(int) - 2 }
-	evenPredicate := func(cur, _, _ Object) bool { return cur.(int)%2 == 0 }
+	evenPredicate := func(cur, _, _ Object) bool { return cur.(int) % 2 == 0 }
 	evenCallback := func(cur, _, _ Object) Object {
-		if cur.(int)%2 == 0 {
+		if cur.(int) % 2 == 0 {
 			return "even"
 		} else {
 			return "odd"
