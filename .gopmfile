@@ -1,8 +1,0 @@
-[target]
-path = github.com/alxrm/ugo
-
-[deps]
-github.com/alxrm/ugo/timsort =
-
-[res]
-include = timsort
