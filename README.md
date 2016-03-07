@@ -6,7 +6,7 @@
 
 Simple and expressive toolbox written with love and care in Go.
 
-Deeply inspired by [underscore.js](http://underscorejs.org/) and has the same syntax and behaviour as JavaScript's underscore.
+Deeply inspired by [underscore.js](http://underscorejs.org/) and has the same syntax and behaviour
 
 Fully covered with tests, no surprises
 
