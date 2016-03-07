@@ -1,17 +1,42 @@
 <component name="libraryTable">
   <library name="GOPATH &lt;ugo&gt;">
     <CLASSES>
+      <root url="file://$PROJECT_DIR$/../src/golang.org" />
       <root url="file://$PROJECT_DIR$/../src/github.com" />
       <root url="file://$PROJECT_DIR$/../src/.DS_Store" />
     </CLASSES>
     <JAVADOC />
     <SOURCES />
     <excluded>
-      <root url="file://$PROJECT_DIR$/../src/github.com/alxrm/ugo/.idea" />
-      <root url="file://$PROJECT_DIR$/../src/github.com/alxrm/ugo/.git" />
+      <root url="file://$PROJECT_DIR$/../src/golang.org/x/tools/go/callgraph/rta/testdata" />
+      <root url="file://$PROJECT_DIR$/../src/golang.org/x/tools/cmd/bundle/testdata" />
+      <root url="file://$PROJECT_DIR$/../src/github.com/gpmgo/gopm/.git" />
+      <root url="file://$PROJECT_DIR$/../src/golang.org/x/tools/go/gcimporter/testdata" />
+      <root url="file://$PROJECT_DIR$/../src/golang.org/x/tools/go/ssa/interp/testdata" />
       <root url="file://$PROJECT_DIR$" />
+      <root url="file://$PROJECT_DIR$/../src/golang.org/x/tools/cmd/vet/testdata" />
+      <root url="file://$PROJECT_DIR$/../src/golang.org/x/tools/cmd/fiximports/testdata" />
+      <root url="file://$PROJECT_DIR$/../src/golang.org/x/tools/refactor/eg/testdata" />
+      <root url="file://$PROJECT_DIR$/../src/golang.org/x/tools/go/ssa/testdata" />
+      <root url="file://$PROJECT_DIR$/../src/github.com/alxrm/ugo/.idea" />
+      <root url="file://$PROJECT_DIR$/../src/golang.org/x/tools/go/gcimporter15/testdata" />
+      <root url="file://$PROJECT_DIR$/../src/github.com/alxrm/ugo/.git" />
+      <root url="file://$PROJECT_DIR$/../src/github.com/golang/lint/.git" />
+      <root url="file://$PROJECT_DIR$/../src/github.com/golang/lint/testdata" />
       <root url="file://$PROJECT_DIR$/../src/github.com/franela/goblin/.git" />
+      <root url="file://$PROJECT_DIR$/../src/golang.org/x/tools/go/gccgoimporter/testdata" />
+      <root url="file://$PROJECT_DIR$/../src/golang.org/x/tools/go/loader/testdata" />
       <root url="file://$PROJECT_DIR$/../src/github.com/psilva261/timsort/.git" />
+      <root url="file://$PROJECT_DIR$/../src/golang.org/x/tools/go/callgraph/cha/testdata" />
+      <root url="file://$PROJECT_DIR$/../src/golang.org/x/tools/cmd/guru/testdata" />
+      <root url="file://$PROJECT_DIR$/../src/golang.org/x/tools/oracle/testdata" />
+      <root url="file://$PROJECT_DIR$/../src/golang.org/x/tools/cmd/cover/testdata" />
+      <root url="file://$PROJECT_DIR$/../src/golang.org/x/tools/go/ssa/ssautil/testdata" />
+      <root url="file://$PROJECT_DIR$/../src/golang.org/x/tools/cmd/callgraph/testdata" />
+      <root url="file://$PROJECT_DIR$/../src/golang.org/x/tools/go/types/testdata" />
+      <root url="file://$PROJECT_DIR$/../src/golang.org/x/tools/.git" />
+      <root url="file://$PROJECT_DIR$/../src/golang.org/x/tools/cmd/stringer/testdata" />
+      <root url="file://$PROJECT_DIR$/../src/golang.org/x/tools/go/pointer/testdata" />
     </excluded>
   </library>
 </component>

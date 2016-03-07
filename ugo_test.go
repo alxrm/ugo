@@ -23,7 +23,7 @@
 package ugo_test
 
 import (
-	. "github.com/alxrm/ugo"
+	. "../ugo"
 	. "github.com/franela/goblin"
 	"math"
 	"testing"
@@ -34,6 +34,7 @@ func TestSingleValues(t *testing.T) {
 
 	inSeq := Seq{2, 2, 4, 6, 7, 8, 10, 10, 17, 120}
 	inSeqDifOrder := Seq{17, 2, 8, 6, 2, 4, 10, 7, 10, 120}
+	inSeqDifElems := Seq{11, 19, 38, 66, 99, 199, 164, 70, 210, 872}
 	intComparator := func(l, r Object) int { return l.(int) - r.(int) }
 	reduceCollector := func(memo, cur, _, _ Object) Object { return memo.(int) + cur.(int) }
 	searchPredicate := func(cur, _, _ Object) bool { return cur.(int) > 7 }
@@ -41,6 +42,7 @@ func TestSingleValues(t *testing.T) {
 	g.Describe("#Min()", func() {
 		g.It("Should return min value ", func() {
 			g.Assert(Min(inSeqDifOrder, intComparator)).Equal(2)
+			g.Assert(Min(Seq{199}, intComparator)).Equal(199)
 			g.Assert(Min(nil, intComparator)).Equal(-1)
 			g.Assert(Min(inSeqDifOrder, nil)).Equal(-1)
 			g.Assert(Min(nil, nil)).Equal(-1)
@@ -50,6 +52,7 @@ func TestSingleValues(t *testing.T) {
 	g.Describe("#Max()", func() {
 		g.It("Should return max value ", func() {
 			g.Assert(Max(inSeqDifOrder, intComparator)).Equal(120)
+			g.Assert(Max(Seq{-20}, intComparator)).Equal(-20)
 			g.Assert(Max(nil, intComparator)).Equal(-1)
 			g.Assert(Max(inSeqDifOrder, nil)).Equal(-1)
 			g.Assert(Max(nil, nil)).Equal(-1)
@@ -122,6 +125,7 @@ func TestSingleValues(t *testing.T) {
 	g.Describe("#Every()", func() {
 		g.It("Should return true if all of the elements have passed the predicate test", func() {
 			g.Assert(Every(inSeq, searchPredicate)).IsFalse()
+			g.Assert(Every(inSeqDifElems, searchPredicate)).IsTrue()
 			g.Assert(Every(nil, searchPredicate)).IsFalse()
 			g.Assert(Every(inSeq, nil)).IsFalse()
 			g.Assert(Every(nil, nil)).IsFalse()
@@ -180,7 +184,9 @@ func TestSingleValues(t *testing.T) {
 		g.It("Should return true if sliceA == sliceB, only elements", func() {
 			g.Assert(EqualsNotStrict(inSeq, inSeq, intComparator)).IsTrue()
 			g.Assert(EqualsNotStrict(inSeq, inSeqDifOrder, intComparator)).IsTrue()
+			g.Assert(EqualsNotStrict(inSeqDifElems, inSeq, intComparator)).IsFalse()
 			g.Assert(EqualsNotStrict(nil, inSeq, intComparator)).IsFalse()
+			g.Assert(EqualsNotStrict(inSeqDifElems, inSeq, intComparator)).IsFalse()
 			g.Assert(EqualsNotStrict(inSeq, nil, intComparator)).IsFalse()
 			g.Assert(EqualsNotStrict(inSeq, inSeqDifOrder, nil)).IsFalse()
 			g.Assert(EqualsNotStrict(nil, nil, intComparator)).IsTrue()
@@ -471,6 +477,9 @@ func TestUtils(t *testing.T) {
 			g.Assert(Random(math.Inf(-1), math.Inf(-1))).Equal(0)
 			g.Assert(Random(math.Inf(-1), math.Inf(1)) != int(math.Inf(-1))).IsTrue()
 			g.Assert(Random(math.Inf(-1), math.Inf(1)) != 0).IsTrue()
+			g.Assert(Random(math.Inf(-1), math.Inf(1)) != 0).IsTrue()
+			g.Assert(Random(-5, -20) >= -20).IsTrue()
+			g.Assert(Random(-5, math.NaN()) < 0).IsTrue()
 		})
 	})
 
