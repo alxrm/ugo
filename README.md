@@ -1,0 +1,89 @@
+[![GoDoc](https://godoc.org/github.com/alxrm/ugo?status.svg)](https://godoc.org/github.com/alxrm/ugo)
+
+# ugo
+
+Simple and expressive toolbox written with love and care in Go.
+
+Deeply inspired by [underscore.js](http://underscorejs.org/) and has the same syntax and behaviour as JavaScript's underscore.
+
+Fully covered with tests, no surprises
+
+### Quick start
+
+__Installation__
+
+```
+go get -u  github.com/alxrm/ugo
+```
+
+__Import__
+
+``` GO
+import (
+	u "github.com/alxrm/ugo"
+)
+```
+
+### Usage
+
+It works with some special type, named `Seq`, which is an alias for `[]interface{}`
+
+So let's make some
+
+```GO
+	
+// creates the new string Seq
+strSeq := u.Seq{ "nineteen", "eigth", "four" } // ["nineteen" "eigth" "four"]
+	
+// creates the new Seq with given length
+emptySeq := u.NewSeq(0); // []
+	
+// copies reflectively all of the values from int slice to Seq
+intSlc := []int{ 4, 6, 2, 7, 8, 10, 9, 9, 120, 10, 2, 17 }
+intSeq := u.From(intSlc, len(intSlc)) // [4 6 2 7 8 10 9 9 120 10 2 17]
+
+```
+
+_Actually reflection approach in `u.From` can have an impact on performance :snail: so use it with care._
+
+Okay, now we have some Seq's, 
+
+What if I want to leave only unique elements in my int slice?
+
+Go and get it :zap:
+
+```Go
+
+initialSeq := u.Seq{ 4, 6, 2, 7, 8, 10, 9, 9, 120, 10, 2, 17 }
+uniquedSeq := u.Uniq(initial, func(l, r u.Object) int { return l.(int) - r.(int) })
+
+fmt.Println(uniquedSeq) // [4 6 2 7 8 10 9 120 17]
+
+```
+
+And I want to leave only odd ones
+
+Nice choice! :fire:
+
+```Go
+oddsSeq := u.Filter(uniquedSeq, func(cur, _, _ u.Object) bool { return cur.(int) % 2 != 0 })
+
+fmt.Println(oddsSeq) // [7 9 17]
+```
+
+### Try it by yourself! 
+
+Explore all of the features and get your slice routine done faster
+
+### Contribute
+
+We highly appreciate any of your pull requests and issues!
+
+Be welcome :coffee:
+
+
+__Some of the TODOs:__
+
+- [ ] Aliases from underscore
+- [ ] Chaining like map(...).uniq(...).result()
+- [ ] Better documentation 
