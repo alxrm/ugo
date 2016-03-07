@@ -23,7 +23,7 @@
 package ugo_test
 
 import (
-	. "../ugo"
+	. "github.com/alxrm/ugo"
 	. "github.com/franela/goblin"
 	"math"
 	"testing"
