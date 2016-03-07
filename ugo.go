@@ -1,27 +1,24 @@
-/*
-The MIT License (MIT)
-
-Copyright (c) 2016 Alexey Derbyshev
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-*/
-
+//The MIT License (MIT)
+//
+//Copyright (c) 2016 Alexey Derbyshev
+//
+//Permission is hereby granted, free of charge, to any person obtaining a copy
+//of this software and associated documentation files (the "Software"), to deal
+//in the Software without restriction, including without limitation the rights
+//to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+//copies of the Software, and to permit persons to whom the Software is
+//furnished to do so, subject to the following conditions:
+//
+//The above copyright notice and this permission notice shall be included in all
+//copies or substantial portions of the Software.
+//
+//THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+//IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+//FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+//AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+//LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+//OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+//SOFTWARE.
 
 // Package ugo is a toolbox, inspired by underscore.js
 // This package provide some of the underscore most used functions
@@ -59,7 +56,6 @@ type Object interface{}
 
 // An alias type for (generic) interface{} slice
 type Seq []interface{}
-
 
 // An alias type for Callback function, which has following args:
 //
@@ -114,16 +110,15 @@ type Predicate func(current, currentKey, src Object) bool
 // * Seq list
 type Action func(current, currentKey, src Object)
 
-
 const (
-	_DIRECTION_TO_MIN int = -1 /** constant value for incrementing */
-	_DIRECTION_TO_MAX int = 1 /** constant value for decrementing */
+	toMin int = -1 /** constant value for incrementing */
+	toMax int = 1  /** constant value for decrementing */
 )
 
 const (
-	_LESS = -1
-	_EQUAL = 0
-	_LARGER = 1
+	less   = -1
+	equal  = 0
+	larger = 1
 )
 
 // creates new Seq aliased slice with given size
@@ -133,7 +128,9 @@ func NewSeq(size int) Seq {
 
 // Calls cb Action on each element
 func Each(seq Seq, cb Action) {
-	if cb == nil { return }
+	if cb == nil {
+		return
+	}
 	for index, val := range seq {
 		cb(val, index, seq)
 	}
@@ -141,8 +138,12 @@ func Each(seq Seq, cb Action) {
 
 // Creates new slice same size, every element is the result of Callback
 func Map(seq Seq, cb Callback) Seq {
-	if seq == nil { return Seq{} }
-	if cb == nil { return seq }
+	if seq == nil {
+		return Seq{}
+	}
+	if cb == nil {
+		return seq
+	}
 
 	length := len(seq)
 	result := NewSeq(length)
@@ -156,8 +157,12 @@ func Map(seq Seq, cb Callback) Seq {
 
 // Creates new slice, contains only elements that passed Predicate check
 func Filter(seq Seq, cb Predicate) Seq {
-	if seq == nil { return Seq{} }
-	if cb == nil { return seq }
+	if seq == nil {
+		return Seq{}
+	}
+	if cb == nil {
+		return seq
+	}
 
 	result := NewSeq(0)
 
@@ -172,8 +177,12 @@ func Filter(seq Seq, cb Predicate) Seq {
 
 // Creates new slice, contains only elements that h passed Predicate check
 func Reject(seq Seq, cb Predicate) Seq {
-	if seq == nil { return Seq{} }
-	if cb == nil { return seq }
+	if seq == nil {
+		return Seq{}
+	}
+	if cb == nil {
+		return seq
+	}
 
 	return Filter(seq, negate(cb))
 }
@@ -190,10 +199,10 @@ func Reduce(seq Seq, cb Collector, initial Object) Object {
 
 	if initial == nil {
 		memo = seq[0]
-		return createReduce(seq, cb, memo, 1, _DIRECTION_TO_MAX, length-1)
+		return createReduce(seq, cb, memo, 1, toMax, length-1)
 	} else {
 		memo = initial
-		return createReduce(seq, cb, memo, 0, _DIRECTION_TO_MAX, length)
+		return createReduce(seq, cb, memo, 0, toMax, length)
 	}
 }
 
@@ -209,48 +218,48 @@ func ReduceRight(seq Seq, cb Collector, initial Object) Object {
 
 	if initial == nil {
 		memo = seq[length]
-		return createReduce(seq, cb, memo, length-1, _DIRECTION_TO_MIN, length-1)
-	} else {
-		memo = initial
-		return createReduce(seq, cb, memo, length, _DIRECTION_TO_MIN, length)
+		return createReduce(seq, cb, memo, length-1, toMin, length-1)
 	}
+
+	memo = initial
+	return createReduce(seq, cb, memo, length, toMin, length)
 }
 
 // returns min value from slice, calculated in comparator
 func Min(seq Seq, cb Comparator) Object {
-	return createComparingIterator(seq, cb, _DIRECTION_TO_MIN, len(seq))
+	return createComparingIterator(seq, cb, toMin, len(seq))
 }
 
 // returns max value from slice, calculated in comparator
 func Max(seq Seq, cb Comparator) Object {
-	return createComparingIterator(seq, cb, _DIRECTION_TO_MAX, len(seq))
+	return createComparingIterator(seq, cb, toMax, len(seq))
 }
 
 // returns first found value, passed the predicate check
 func Find(seq Seq, cb Predicate) Object {
 	length := len(seq) - 1
-	res, _ := createPredicateSearch(seq, cb, 0, _DIRECTION_TO_MAX, length)
+	res, _ := createPredicateSearch(seq, cb, 0, toMax, length)
 	return res
 }
 
 // returns last found value, passed the predicate check
 func FindLast(seq Seq, cb Predicate) Object {
 	length := len(seq) - 1
-	res, _ := createPredicateSearch(seq, cb, length, _DIRECTION_TO_MIN, length)
+	res, _ := createPredicateSearch(seq, cb, length, toMin, length)
 	return res
 }
 
 // returns first found index, which value passed the predicate check
 func FindIndex(seq Seq, cb Predicate) int {
 	length := len(seq) - 1
-	_, index := createPredicateSearch(seq, cb, 0, _DIRECTION_TO_MAX, length)
+	_, index := createPredicateSearch(seq, cb, 0, toMax, length)
 	return index
 }
 
 // returns last found index, which value passed the predicate check
 func FindLastIndex(seq Seq, cb Predicate) int {
 	length := len(seq) - 1
-	_, index := createPredicateSearch(seq, cb, length, _DIRECTION_TO_MIN, length)
+	_, index := createPredicateSearch(seq, cb, length, toMin, length)
 	return index
 }
 
@@ -262,7 +271,9 @@ func Some(seq Seq, cb Predicate) bool {
 // founds index of the first element, which equals to passed one(target)
 // NOTE: if slice is sorted, this method can use better search algorithm
 func IndexOf(seq Seq, target Object, isSorted bool, cb Comparator) int {
-	if cb == nil { return -1 }
+	if cb == nil {
+		return -1
+	}
 
 	if isSorted {
 		_, index := createBinarySearch(seq, target, cb, len(seq))
@@ -275,7 +286,9 @@ func IndexOf(seq Seq, target Object, isSorted bool, cb Comparator) int {
 
 // founds index of the last element, which equals to passed one(target)
 func LastIndexOf(seq Seq, target Object, cb Comparator) int {
-	if cb == nil { return -1 }
+	if cb == nil {
+		return -1
+	}
 	var equalityPredicate Predicate = func(cur, _, _ Object) bool { return cb(cur, target) == 0 }
 	return FindLastIndex(seq, equalityPredicate)
 }
@@ -283,7 +296,9 @@ func LastIndexOf(seq Seq, target Object, cb Comparator) int {
 // returns true if slice contains element, which equals to passed one(target)
 // NOTE: if slice is sorted, this method can use better search algorithm
 func Contains(seq Seq, target Object, isSorted bool, cb Comparator) bool {
-	if cb == nil { return false }
+	if cb == nil {
+		return false
+	}
 
 	return IndexOf(seq, target, isSorted, cb) != -1
 }
@@ -304,8 +319,12 @@ func Every(seq Seq, cb Predicate) bool {
 
 // returns slice, which contains only unique elements, calculated by Comparator
 func Uniq(seq Seq, cb Comparator) Seq {
-	if seq == nil { return Seq{} }
-	if cb == nil { return seq }
+	if seq == nil {
+		return Seq{}
+	}
+	if cb == nil {
+		return seq
+	}
 
 	result := NewSeq(0)
 	for _, value := range seq {
@@ -318,8 +337,12 @@ func Uniq(seq Seq, cb Comparator) Seq {
 
 // returns the values from slice that are not present in the other slice
 func Difference(seq, other Seq, cb Comparator) Seq {
-	if seq == nil { return Seq{} }
-	if cb == nil || other == nil { return Seq{} }
+	if seq == nil {
+		return Seq{}
+	}
+	if cb == nil || other == nil {
+		return Seq{}
+	}
 
 	result := NewSeq(0)
 
@@ -333,8 +356,12 @@ func Difference(seq, other Seq, cb Comparator) Seq {
 
 // returns the Slice without all instances of nonGrata value
 func Without(seq Seq, nonGrata Object, cb Comparator) Seq {
-	if seq == nil || cb == nil { return Seq{} }
-	if nonGrata == nil { return seq }
+	if seq == nil || cb == nil {
+		return Seq{}
+	}
+	if nonGrata == nil {
+		return seq
+	}
 
 	result := NewSeq(0)
 
@@ -350,8 +377,12 @@ func Without(seq Seq, nonGrata Object, cb Comparator) Seq {
 // returns the values that are intersection of two slices
 // Each value in the result is present in each of the arrays.
 func Intersection(seq, other Seq, cb Comparator) Seq {
-	if seq == nil { return Seq{} }
-	if cb == nil || other == nil { return Seq{} }
+	if seq == nil {
+		return Seq{}
+	}
+	if cb == nil || other == nil {
+		return Seq{}
+	}
 
 	result := NewSeq(0)
 
@@ -360,14 +391,19 @@ func Intersection(seq, other Seq, cb Comparator) Seq {
 			result = append(result, value)
 		}
 	}
-	return Uniq(result, cb);
+
+	return Uniq(result, cb)
 }
 
 // returns the unique values that are union of two slices
 // each value in the result appears at least once in one of the passed slices
 func Union(seq, other Seq, cb Comparator) Seq {
-	if seq == nil { return Seq{} }
-	if cb == nil { return Seq{} }
+	if seq == nil {
+		return Seq{}
+	}
+	if cb == nil {
+		return Seq{}
+	}
 
 	result := Concat(seq, other)
 
@@ -377,8 +413,12 @@ func Union(seq, other Seq, cb Comparator) Seq {
 // returns sorted slice, uses very powerful timsort* algorithm
 // *timsort obtained from: https://github.com/psilva261/timsort
 func SortBy(seq Seq, cb Comparator) Seq {
-	if seq == nil { return Seq{} }
-	if cb == nil { return seq }
+	if seq == nil {
+		return Seq{}
+	}
+	if cb == nil {
+		return seq
+	}
 	sorter.Sort(seq, lessThan(cb))
 	return seq
 }
@@ -408,19 +448,23 @@ func CountBy(seq Seq, cb Callback) (result map[string]int) {
 
 // removes an element from given position in slice
 func Remove(seq Seq, position int) Seq {
-	if seq == nil { return Seq{} }
-	position = fixPosition(position, len(seq) - 1)
+	if seq == nil {
+		return Seq{}
+	}
+	position = fixPosition(position, len(seq)-1)
 
-	return append(seq[:position], seq[position + 1:]...)
+	return append(seq[:position], seq[position+1:]...)
 }
 
 // inserts an element into given position in slice
 func Insert(seq Seq, target Object, position int) Seq {
-	if seq == nil { return Seq{} }
+	if seq == nil {
+		return Seq{}
+	}
 	position = fixPosition(position, len(seq))
 
 	seq = append(seq, 0)
-	copy(seq[position + 1:], seq[position:])
+	copy(seq[position+1:], seq[position:])
 	seq[position] = target
 
 	return seq
@@ -428,22 +472,29 @@ func Insert(seq Seq, target Object, position int) Seq {
 
 // adds another slice to the end of given slice
 func Concat(seq, next Seq) Seq {
-	if seq == nil { return Seq{} }
-	if next == nil { return seq }
+	if seq == nil {
+		return Seq{}
+	}
+	if next == nil {
+		return seq
+	}
 
 	return append(seq, next...)
 }
 
-
 // returns shuffled slice
 func Shuffle(seq Seq) Seq {
-	if seq == nil { return Seq{} }
+	if seq == nil {
+		return Seq{}
+	}
 	return createShuffle(seq)
 }
 
 // returns shuffled copy of slice
 func ShuffledCopy(seq Seq) Seq {
-	if seq == nil { return Seq{} }
+	if seq == nil {
+		return Seq{}
+	}
 
 	length := len(seq)
 	copied := NewSeq(length)
@@ -454,17 +505,20 @@ func ShuffledCopy(seq Seq) Seq {
 
 // returns reversed slice
 func Reverse(seq Seq) Seq {
-	if seq == nil { return Seq{} }
+	if seq == nil {
+		return Seq{}
+	}
 
 	length := len(seq)
 
 	return createReverse(seq, length)
 }
 
-
 // returns reversed copy of slice
 func ReversedCopy(seq Seq) Seq {
-	if seq == nil { return Seq{} }
+	if seq == nil {
+		return Seq{}
+	}
 
 	length := len(seq)
 	copied := NewSeq(length)
@@ -570,12 +624,16 @@ func createComparingIterator(seq Seq, cb Comparator, dir, length int) Object {
 	var lastComputed Object = nil
 	var innerComputed Object = nil
 
-	if IsEmpty(seq) || cb == nil { return -1 }
-	if length == 1 { return seq[0] }
+	if IsEmpty(seq) || cb == nil {
+		return -1
+	}
+	if length == 1 {
+		return seq[0]
+	}
 
 	lastComputed = seq[0]
 
-	for left, right := 0, length - 1; left <= right; left, right = left + 1, right - 1 {
+	for left, right := 0, length-1; left <= right; left, right = left+1, right-1 {
 		if sgn(cb(seq[left], seq[right])) == dir {
 			innerComputed = seq[left]
 		} else {
@@ -612,7 +670,7 @@ func createShuffle(seq Seq) Seq {
 }
 
 func createReverse(seq Seq, length int) Seq {
-	for left, right := 0, length - 1; left < right; left, right = left + 1, right - 1 {
+	for left, right := 0, length-1; left < right; left, right = left+1, right-1 {
 		seq[left], seq[right] = seq[right], seq[left]
 	}
 
@@ -678,11 +736,11 @@ func negate(cb Predicate) Predicate {
 
 func sgn(num int) int {
 	if num < 0 {
-		return _LESS
+		return less
 	} else if num == 0 {
-		return _EQUAL
+		return equal
 	} else {
-		return _LARGER
+		return larger
 	}
 }
 

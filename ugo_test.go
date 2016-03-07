@@ -1,26 +1,24 @@
-/*
-The MIT License (MIT)
-
-Copyright (c) 2016 Alexey Derbyshev
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-*/
+//The MIT License (MIT)
+//
+//Copyright (c) 2016 Alexey Derbyshev
+//
+//Permission is hereby granted, free of charge, to any person obtaining a copy
+//of this software and associated documentation files (the "Software"), to deal
+//in the Software without restriction, including without limitation the rights
+//to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+//copies of the Software, and to permit persons to whom the Software is
+//furnished to do so, subject to the following conditions:
+//
+//The above copyright notice and this permission notice shall be included in all
+//copies or substantial portions of the Software.
+//
+//THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+//IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+//FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+//AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+//LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+//OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+//SOFTWARE.
 
 package ugo_test
 
@@ -196,9 +194,9 @@ func TestMultipleValues(t *testing.T) {
 
 	intComparator := func(l, r Object) int { return l.(int) - r.(int) }
 	changingCallback := func(cur, _, _ Object) Object { return cur.(int) - 2 }
-	evenPredicate := func(cur, _, _ Object) bool { return cur.(int) % 2 == 0 }
+	evenPredicate := func(cur, _, _ Object) bool { return cur.(int)%2 == 0 }
 	evenCallback := func(cur, _, _ Object) Object {
-		if cur.(int) % 2 == 0 {
+		if cur.(int)%2 == 0 {
 			return "even"
 		} else {
 			return "odd"
@@ -290,8 +288,8 @@ func TestMultipleValues(t *testing.T) {
 		g.It("Should return Seq without value in given index", func() {
 			inSeq := Seq{2, 4, 6, 7, 8, 10, 120, 10, 2, 17}
 			outSeqRemoved := Seq{2, 4, 7, 8, 10, 120, 10, 2, 17}
-			outSeqRemovedFirst := Seq{ 4, 7, 8, 10, 120, 10, 2, 17}
-			outSeqRemovedLast := Seq{ 4, 7, 8, 10, 120, 10, 2 }
+			outSeqRemovedFirst := Seq{4, 7, 8, 10, 120, 10, 2, 17}
+			outSeqRemovedLast := Seq{4, 7, 8, 10, 120, 10, 2}
 			empty := Seq{}
 
 			g.Assert(Remove(inSeq, 2)).Equal(outSeqRemoved)
@@ -342,7 +340,6 @@ func TestMultipleValues(t *testing.T) {
 			g.Assert(Shuffle(nil)).Equal(empty)
 		})
 	})
-
 
 	g.Describe("#ShuffledCopy()", func() {
 		g.It("Should return shuffled copy of Seq", func() {
@@ -396,9 +393,9 @@ func TestMultipleValues(t *testing.T) {
 
 	g.Describe("#Difference()", func() {
 		g.It("Should return Seq with elements, that are not in the other Seq", func() {
-			inSeq := Seq{ 2, 4, 6, 9, 9, 7 }
-			difSeq := Seq{ 2, 4, 8, 10, 17, 9, 2 }
-			out := Seq{ 6, 7 }
+			inSeq := Seq{2, 4, 6, 9, 9, 7}
+			difSeq := Seq{2, 4, 8, 10, 17, 9, 2}
+			out := Seq{6, 7}
 			empty := Seq{}
 
 			g.Assert(Difference(inSeq, difSeq, intComparator)).Equal(out)
@@ -413,9 +410,9 @@ func TestMultipleValues(t *testing.T) {
 
 	g.Describe("#Intersection()", func() {
 		g.It("Should return the intersection of Slices", func() {
-			inSeq := Seq{ 2, 4, 6, 9, 9, 7 }
-			difSeq := Seq{ 2, 4, 8, 10, 17, 9, 2 }
-			out := Seq{ 2, 4, 9 }
+			inSeq := Seq{2, 4, 6, 9, 9, 7}
+			difSeq := Seq{2, 4, 8, 10, 17, 9, 2}
+			out := Seq{2, 4, 9}
 			empty := Seq{}
 
 			g.Assert(Intersection(inSeq, difSeq, intComparator)).Equal(out)
@@ -430,9 +427,9 @@ func TestMultipleValues(t *testing.T) {
 
 	g.Describe("#Union()", func() {
 		g.It("Should return unique values, that at least once appeared in any of slices", func() {
-			inSeq := Seq{ 2, 4, 6, 9, 9, 7 }
-			difSeq := Seq{ 2, 4, 8, 10, 17, 9, 2 }
-			out := Seq{ 2, 4, 6, 9, 7, 8, 10, 17 }
+			inSeq := Seq{2, 4, 6, 9, 9, 7}
+			difSeq := Seq{2, 4, 8, 10, 17, 9, 2}
+			out := Seq{2, 4, 6, 9, 7, 8, 10, 17}
 			empty := Seq{}
 
 			g.Assert(Union(inSeq, difSeq, intComparator)).Equal(out)
@@ -447,9 +444,9 @@ func TestMultipleValues(t *testing.T) {
 
 	g.Describe("#Without()", func() {
 		g.It("Should return the Seq without all instances of passed value", func() {
-			inSeq := Seq{ 2, 4, 6, 9, 9, 7, 9, 10, 1, 9 }
+			inSeq := Seq{2, 4, 6, 9, 9, 7, 9, 10, 1, 9}
 			without := 9
-			out := Seq{ 2, 4, 6, 7, 10, 1 }
+			out := Seq{2, 4, 6, 7, 10, 1}
 			empty := Seq{}
 
 			g.Assert(Without(inSeq, without, intComparator)).Equal(out)
