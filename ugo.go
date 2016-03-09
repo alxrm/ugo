@@ -1,24 +1,24 @@
-//The MIT License (MIT)
+// The MIT License (MIT)
 //
-//Copyright (c) 2016 Alexey Derbyshev
+// Copyright (c) 2016 Alexey Derbyshev
 //
-//Permission is hereby granted, free of charge, to any person obtaining a copy
-//of this software and associated documentation files (the "Software"), to deal
-//in the Software without restriction, including without limitation the rights
-//to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-//copies of the Software, and to permit persons to whom the Software is
-//furnished to do so, subject to the following conditions:
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
 //
-//The above copyright notice and this permission notice shall be included in all
-//copies or substantial portions of the Software.
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
 //
-//THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-//IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-//FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-//AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-//LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-//OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-//SOFTWARE.
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
 
 // Package ugo is a toolbox, inspired by underscore.js
 // This package provide some of the underscore most used functions
@@ -450,9 +450,9 @@ func Remove(seq Seq, position int) Seq {
 	if seq == nil {
 		return Seq{}
 	}
-	position = fixPosition(position, len(seq) - 1)
+	position = fixPosition(position, len(seq)-1)
 
-	return append(seq[:position], seq[position + 1:]...)
+	return append(seq[:position], seq[position+1:]...)
 }
 
 // Insert pushes an element into given position in slice
@@ -463,7 +463,7 @@ func Insert(seq Seq, target Object, position int) Seq {
 	position = fixPosition(position, len(seq))
 
 	seq = append(seq, 0)
-	copy(seq[position + 1:], seq[position:])
+	copy(seq[position+1:], seq[position:])
 	seq[position] = target
 
 	return seq
@@ -732,13 +732,11 @@ func createBinarySearch(sortedSeq Seq, target Object, cb Comparator, length int)
 	return resIndex
 }
 
-
 // lessThen returns function we can use for sorting or comparing,
 // it simply returns true if the left value is less than the right value
 func lessThan(cb Comparator) func(l, r interface{}) bool {
 	return func(l, r interface{}) bool { return cb(l, r) < 0 }
 }
-
 
 // negate returns the given Predicate but with opposite result
 func negate(cb Predicate) Predicate {
@@ -756,7 +754,6 @@ func sgn(num int) int {
 
 	return larger
 }
-
 
 // fixPosition returns robust index, that is inside the slice bounds
 func fixPosition(pos, ableMax int) int {
