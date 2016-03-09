@@ -479,7 +479,7 @@ func TestUtils(t *testing.T) {
 			g.Assert(Random(math.Inf(-1), math.Inf(1)) != 0).IsTrue()
 			g.Assert(Random(math.Inf(-1), math.Inf(1)) != 0).IsTrue()
 			g.Assert(Random(-5, -20) >= -20).IsTrue()
-			g.Assert(Random(-5, math.NaN()) < 0).IsTrue()
+			g.Assert(Random(-5, math.NaN()) <= 0).IsTrue()
 		})
 	})
 

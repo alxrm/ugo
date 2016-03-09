@@ -51,13 +51,13 @@ import (
 	"time"
 )
 
-// An alias type for interface{}
+// Object is an alias type for interface{}
 type Object interface{}
 
-// An alias type for (generic) interface{} slice
+// Seq is an alias type for (generic) interface{} slice e. g. []interface{}
 type Seq []interface{}
 
-// An alias type for Callback function, which has following args:
+// Collector is an alias type for function, used in Reduce based methods, which has following args:
 //
 // * Object memo
 //
@@ -70,7 +70,7 @@ type Seq []interface{}
 // * returns Object: memo, modified after some iteration
 type Collector func(memo, current, currentKey, src Object) Object
 
-// An alias type for Callback function, which has following args:
+// Callback is an alias type for function, used to get calculated result, which has following args:
 //
 // * Object current
 //
@@ -81,7 +81,7 @@ type Collector func(memo, current, currentKey, src Object) Object
 // * returns Object: modified Seq element
 type Callback func(current, currentKey, src Object) Object
 
-// An alias type for Predicate function, which has following args:
+// Comparator is an alias type for function, used to compare one value with another one, which has following args:
 //
 // * Object left
 //
@@ -90,7 +90,7 @@ type Callback func(current, currentKey, src Object) Object
 // * returns int: -1 for less, 0 for equals, 1 for larger
 type Comparator func(left, right Object) int
 
-// An alias type for Predicate function, which has following args:
+// Predicate is an alias type for function, used to check value for some condition, which has following args:
 //
 // * Object current
 //
@@ -101,7 +101,7 @@ type Comparator func(left, right Object) int
 // * returns bool: true if check has been passed
 type Predicate func(current, currentKey, src Object) bool
 
-// An alias type for Action function, which has following args:
+// Action is an alias type for function, used to do some action based on given values, which has following args:
 //
 // * Object current
 //
@@ -121,12 +121,12 @@ const (
 	larger = 1
 )
 
-// creates new Seq aliased slice with given size
+// NewSeq creates a new Seq instance with given size
 func NewSeq(size int) Seq {
 	return make(Seq, size)
 }
 
-// Calls cb Action on each element
+// Each Calls cb Action on each element
 func Each(seq Seq, cb Action) {
 	if cb == nil {
 		return
@@ -136,7 +136,7 @@ func Each(seq Seq, cb Action) {
 	}
 }
 
-// Creates new slice same size, every element is the result of Callback
+// Map creates new slice same size, every element is the result of Callback
 func Map(seq Seq, cb Callback) Seq {
 	if seq == nil {
 		return Seq{}
@@ -155,7 +155,7 @@ func Map(seq Seq, cb Callback) Seq {
 	return result
 }
 
-// Creates new slice, contains only elements that passed Predicate check
+// Filter creates new slice, contains only elements that passed Predicate check
 func Filter(seq Seq, cb Predicate) Seq {
 	if seq == nil {
 		return Seq{}
@@ -175,7 +175,7 @@ func Filter(seq Seq, cb Predicate) Seq {
 	return result
 }
 
-// Creates new slice, contains only elements that h passed Predicate check
+// Reject creates new slice, contains only elements that haven't passed Predicate check
 func Reject(seq Seq, cb Predicate) Seq {
 	if seq == nil {
 		return Seq{}
@@ -187,9 +187,9 @@ func Reject(seq Seq, cb Predicate) Seq {
 	return Filter(seq, negate(cb))
 }
 
-// Makes single value from all of the slice elements, iterating from left
+// Reduce makes single value from all of the slice elements, iterating from left
 func Reduce(seq Seq, cb Collector, initial Object) Object {
-	var memo Object = nil
+	var memo Object
 
 	if IsEmpty(seq) || cb == nil {
 		return nil
@@ -200,15 +200,15 @@ func Reduce(seq Seq, cb Collector, initial Object) Object {
 	if initial == nil {
 		memo = seq[0]
 		return createReduce(seq, cb, memo, 1, toMax, length-1)
-	} else {
-		memo = initial
-		return createReduce(seq, cb, memo, 0, toMax, length)
 	}
+
+	memo = initial
+	return createReduce(seq, cb, memo, 0, toMax, length)
 }
 
-// Makes single value from all of the slice elements, iterating from right
+// ReduceRight makes single value from all of the slice elements, iterating from right
 func ReduceRight(seq Seq, cb Collector, initial Object) Object {
-	var memo Object = nil
+	var memo Object
 
 	if IsEmpty(seq) || cb == nil {
 		return nil
@@ -225,50 +225,50 @@ func ReduceRight(seq Seq, cb Collector, initial Object) Object {
 	return createReduce(seq, cb, memo, length, toMin, length)
 }
 
-// returns min value from slice, calculated in comparator
+// Min returns min value from slice, calculated in comparator
 func Min(seq Seq, cb Comparator) Object {
 	return createComparingIterator(seq, cb, toMin, len(seq))
 }
 
-// returns max value from slice, calculated in comparator
+// Max returns max value from slice, calculated in comparator
 func Max(seq Seq, cb Comparator) Object {
 	return createComparingIterator(seq, cb, toMax, len(seq))
 }
 
-// returns first found value, passed the predicate check
+// Find returns first found value, passed the predicate check
 func Find(seq Seq, cb Predicate) Object {
 	length := len(seq) - 1
 	res, _ := createPredicateSearch(seq, cb, 0, toMax, length)
 	return res
 }
 
-// returns last found value, passed the predicate check
+// FindLast returns last found value, passed the predicate check
 func FindLast(seq Seq, cb Predicate) Object {
 	length := len(seq) - 1
 	res, _ := createPredicateSearch(seq, cb, length, toMin, length)
 	return res
 }
 
-// returns first found index, which value passed the predicate check
+// FindIndex returns first found index, which value passed the predicate check
 func FindIndex(seq Seq, cb Predicate) int {
 	length := len(seq) - 1
 	_, index := createPredicateSearch(seq, cb, 0, toMax, length)
 	return index
 }
 
-// returns last found index, which value passed the predicate check
+// FindLastIndex returns last found index, which value passed the predicate check
 func FindLastIndex(seq Seq, cb Predicate) int {
 	length := len(seq) - 1
 	_, index := createPredicateSearch(seq, cb, length, toMin, length)
 	return index
 }
 
-// returns true if at least one element passed the predicate check
+// Some returns true if at least one element passed the predicate check
 func Some(seq Seq, cb Predicate) bool {
 	return FindIndex(seq, cb) != -1
 }
 
-// founds index of the first element, which equals to passed one(target)
+// IndexOf founds index of the first element, which equals to passed one(target)
 // NOTE: if slice is sorted, this method can use better search algorithm
 func IndexOf(seq Seq, target Object, isSorted bool, cb Comparator) int {
 	if cb == nil {
@@ -276,15 +276,14 @@ func IndexOf(seq Seq, target Object, isSorted bool, cb Comparator) int {
 	}
 
 	if isSorted {
-		_, index := createBinarySearch(seq, target, cb, len(seq))
-		return index
-	} else {
-		var equalityPredicate Predicate = func(cur, _, _ Object) bool { return cb(cur, target) == 0 }
-		return FindIndex(seq, equalityPredicate)
+		return createBinarySearch(seq, target, cb, len(seq))
 	}
+
+	equalityPredicate := func(cur, _, _ Object) bool { return cb(cur, target) == 0 }
+	return FindIndex(seq, equalityPredicate)
 }
 
-// founds index of the last element, which equals to passed one(target)
+// LastIndexOf founds index of the last element, which equals to passed one(target)
 func LastIndexOf(seq Seq, target Object, cb Comparator) int {
 	if cb == nil {
 		return -1
@@ -293,7 +292,7 @@ func LastIndexOf(seq Seq, target Object, cb Comparator) int {
 	return FindLastIndex(seq, equalityPredicate)
 }
 
-// returns true if slice contains element, which equals to passed one(target)
+// Contains returns true if slice contains element, which equals to passed one(target)
 // NOTE: if slice is sorted, this method can use better search algorithm
 func Contains(seq Seq, target Object, isSorted bool, cb Comparator) bool {
 	if cb == nil {
@@ -303,7 +302,7 @@ func Contains(seq Seq, target Object, isSorted bool, cb Comparator) bool {
 	return IndexOf(seq, target, isSorted, cb) != -1
 }
 
-// returns true if every element in slice have passed the predicate test
+// Every returns true if every element in slice have passed the predicate test
 func Every(seq Seq, cb Predicate) bool {
 	if IsEmpty(seq) || cb == nil {
 		return false
@@ -317,7 +316,7 @@ func Every(seq Seq, cb Predicate) bool {
 	return true
 }
 
-// returns slice, which contains only unique elements, calculated by Comparator
+// Uniq returns slice, which contains only unique elements, calculated by Comparator
 func Uniq(seq Seq, cb Comparator) Seq {
 	if seq == nil {
 		return Seq{}
@@ -335,7 +334,7 @@ func Uniq(seq Seq, cb Comparator) Seq {
 	return result
 }
 
-// returns the values from slice that are not present in the other slice
+// Difference returns the values from slice that are not present in the other slice
 func Difference(seq, other Seq, cb Comparator) Seq {
 	if seq == nil {
 		return Seq{}
@@ -354,7 +353,7 @@ func Difference(seq, other Seq, cb Comparator) Seq {
 	return result
 }
 
-// returns the Slice without all instances of nonGrata value
+// Without returns the Slice without all instances of nonGrata value
 func Without(seq Seq, nonGrata Object, cb Comparator) Seq {
 	if seq == nil || cb == nil {
 		return Seq{}
@@ -374,7 +373,7 @@ func Without(seq Seq, nonGrata Object, cb Comparator) Seq {
 	return result
 }
 
-// returns the values that are intersection of two slices
+// Intersection returns the values that are intersection of two slices
 // Each value in the result is present in each of the arrays.
 func Intersection(seq, other Seq, cb Comparator) Seq {
 	if seq == nil {
@@ -395,7 +394,7 @@ func Intersection(seq, other Seq, cb Comparator) Seq {
 	return Uniq(result, cb)
 }
 
-// returns the unique values that are union of two slices
+// Union returns the unique values that are union of two slices
 // each value in the result appears at least once in one of the passed slices
 func Union(seq, other Seq, cb Comparator) Seq {
 	if seq == nil {
@@ -410,7 +409,7 @@ func Union(seq, other Seq, cb Comparator) Seq {
 	return Uniq(result, cb)
 }
 
-// returns sorted slice, uses very powerful timsort* algorithm
+// SortBy returns sorted slice, uses very powerful timsort* algorithm
 // *timsort obtained from: https://github.com/psilva261/timsort
 func SortBy(seq Seq, cb Comparator) Seq {
 	if seq == nil {
@@ -423,7 +422,7 @@ func SortBy(seq Seq, cb Comparator) Seq {
 	return seq
 }
 
-// returns map, which values are count of certain kind of values,
+// CountBy returns map, which values are count of certain kind of values,
 // and keys are names of this kinds
 func CountBy(seq Seq, cb Callback) (result map[string]int) {
 	if seq == nil || cb == nil {
@@ -446,17 +445,17 @@ func CountBy(seq Seq, cb Callback) (result map[string]int) {
 	return result
 }
 
-// removes an element from given position in slice
+// Remove takes an element from given position in slice
 func Remove(seq Seq, position int) Seq {
 	if seq == nil {
 		return Seq{}
 	}
-	position = fixPosition(position, len(seq)-1)
+	position = fixPosition(position, len(seq) - 1)
 
-	return append(seq[:position], seq[position+1:]...)
+	return append(seq[:position], seq[position + 1:]...)
 }
 
-// inserts an element into given position in slice
+// Insert pushes an element into given position in slice
 func Insert(seq Seq, target Object, position int) Seq {
 	if seq == nil {
 		return Seq{}
@@ -464,13 +463,13 @@ func Insert(seq Seq, target Object, position int) Seq {
 	position = fixPosition(position, len(seq))
 
 	seq = append(seq, 0)
-	copy(seq[position+1:], seq[position:])
+	copy(seq[position + 1:], seq[position:])
 	seq[position] = target
 
 	return seq
 }
 
-// adds another slice to the end of given slice
+// Concat adds another slice to the end of given slice
 func Concat(seq, next Seq) Seq {
 	if seq == nil {
 		return Seq{}
@@ -482,7 +481,7 @@ func Concat(seq, next Seq) Seq {
 	return append(seq, next...)
 }
 
-// returns shuffled slice
+// Shuffle returns shuffled slice
 func Shuffle(seq Seq) Seq {
 	if seq == nil {
 		return Seq{}
@@ -490,7 +489,7 @@ func Shuffle(seq Seq) Seq {
 	return createShuffle(seq)
 }
 
-// returns shuffled copy of slice
+// ShuffledCopy returns shuffled copy of slice
 func ShuffledCopy(seq Seq) Seq {
 	if seq == nil {
 		return Seq{}
@@ -503,7 +502,7 @@ func ShuffledCopy(seq Seq) Seq {
 	return createShuffle(copied)
 }
 
-// returns reversed slice
+// Reverse returns reversed slice
 func Reverse(seq Seq) Seq {
 	if seq == nil {
 		return Seq{}
@@ -514,7 +513,7 @@ func Reverse(seq Seq) Seq {
 	return createReverse(seq, length)
 }
 
-// returns reversed copy of slice
+// ReversedCopy returns reversed copy of slice
 func ReversedCopy(seq Seq) Seq {
 	if seq == nil {
 		return Seq{}
@@ -527,7 +526,7 @@ func ReversedCopy(seq Seq) Seq {
 	return createReverse(copied, length)
 }
 
-// checks whether both of the given slices are strictly equal,
+// EqualsStrict checks whether both of the given slices are strictly equal,
 // e. g. they got the same values in the same positions
 func EqualsStrict(seqLeft, seqRight Seq, cb Comparator) bool {
 	if len(seqLeft) != len(seqRight) || cb == nil {
@@ -543,7 +542,7 @@ func EqualsStrict(seqLeft, seqRight Seq, cb Comparator) bool {
 	return true
 }
 
-// checks whether both of the given slices are equal, but not strictly,
+// EqualsNotStrict checks whether both of the given slices are equal, but not strictly,
 // e. g. they the same values, but positions can be different
 func EqualsNotStrict(seqLeft, seqRight Seq, cb Comparator) bool {
 	lengthLeft := len(seqLeft)
@@ -570,7 +569,7 @@ func EqualsNotStrict(seqLeft, seqRight Seq, cb Comparator) bool {
 
 /* Utils */
 
-// return the random number in given range
+// Random returns the random number in given range
 func Random(min, max float64) int {
 	if min == max {
 		return 0
@@ -592,17 +591,17 @@ func Random(min, max float64) int {
 	return int(res)
 }
 
-// returns true if given slice has zero length or it's to nil
+// IsEmpty returns true if given slice has zero length or it's to nil
 func IsEmpty(seq Seq) bool {
 	return seq == nil || len(seq) == 0
 }
 
-// returns true if given object has type of slice
+// IsSlice returns true if given object has type of slice
 func IsSlice(target Object) bool {
 	return reflect.ValueOf(target).Kind() == reflect.Slice
 }
 
-// returns Seq from given object, filling the resulting Seq via reflection
+// From returns Seq from given object, filling the resulting Seq via reflection
 // NOTE: You should possibly avoid using this one
 func From(target Object, size int) Seq {
 	if !IsSlice(target) || size < 0 {
@@ -620,9 +619,11 @@ func From(target Object, size int) Seq {
 }
 
 /* private methods */
+// createComparingIterator returns single value, which conforms some condition (dir)
+// it works for O(n/2) and uses in Min/Max methods
 func createComparingIterator(seq Seq, cb Comparator, dir, length int) Object {
-	var lastComputed Object = nil
-	var innerComputed Object = nil
+	var lastComputed Object
+	var innerComputed Object
 
 	if IsEmpty(seq) || cb == nil {
 		return -1
@@ -648,6 +649,7 @@ func createComparingIterator(seq Seq, cb Comparator, dir, length int) Object {
 	return lastComputed
 }
 
+// createShuffle returns single value folded to it from given slice
 func createReduce(seq Seq, cb Collector, memo Object, startPoint, direction, length int) Object {
 	result := memo
 	index := startPoint
@@ -660,6 +662,7 @@ func createReduce(seq Seq, cb Collector, memo Object, startPoint, direction, len
 	return result
 }
 
+// createShuffle returns slice shuffled by Fisher-Yates algorithm
 func createShuffle(seq Seq) Seq {
 	for i := range seq {
 		j := Random(0, float64(i))
@@ -669,6 +672,7 @@ func createShuffle(seq Seq) Seq {
 	return seq
 }
 
+// createReverse returns the slice, shuffled in O(n/2) operations
 func createReverse(seq Seq, length int) Seq {
 	for left, right := 0, length-1; left < right; left, right = left+1, right-1 {
 		seq[left], seq[right] = seq[right], seq[left]
@@ -677,6 +681,8 @@ func createReverse(seq Seq, length int) Seq {
 	return seq
 }
 
+// createBinarySearch returns the index of the value we want to find,
+// it just goes through given slice and invokes the Predicate check
 func createPredicateSearch(seq Seq, cb Predicate, startPoint, direction, length int) (res Object, resIndex int) {
 	res = nil
 	resIndex = -1
@@ -699,10 +705,11 @@ func createPredicateSearch(seq Seq, cb Predicate, startPoint, direction, length 
 	return
 }
 
-/* this assumes that we operating with sorted Sequence */
-func createBinarySearch(sortedSeq Seq, target Object, cb Comparator, length int) (res Object, resIndex int) {
-	res = nil
-	resIndex = -1
+// createBinarySearch returns the index of the value we want to find,
+// it uses the Binary Search algorithm to reduce iteration count
+// this assumes that we operating with sorted Sequence
+func createBinarySearch(sortedSeq Seq, target Object, cb Comparator, length int) int {
+	resIndex := -1
 
 	lo := 0
 	hi := length
@@ -712,7 +719,6 @@ func createBinarySearch(sortedSeq Seq, target Object, cb Comparator, length int)
 
 		if cb(sortedSeq[mid], target) == 0 {
 			resIndex = mid
-			res = sortedSeq[mid]
 			break
 		}
 
@@ -723,37 +729,47 @@ func createBinarySearch(sortedSeq Seq, target Object, cb Comparator, length int)
 		}
 	}
 
-	return
+	return resIndex
 }
 
+
+// lessThen returns function we can use for sorting or comparing,
+// it simply returns true if the left value is less than the right value
 func lessThan(cb Comparator) func(l, r interface{}) bool {
 	return func(l, r interface{}) bool { return cb(l, r) < 0 }
 }
 
+
+// negate returns the given Predicate but with opposite result
 func negate(cb Predicate) Predicate {
 	return func(cur, index, list Object) bool { return !cb(cur, index, list) }
 }
 
+// sgn returns the sign of the passed number, which can be, as follows,
+// -1, 0, 1 (negative, zero, positive)
 func sgn(num int) int {
 	if num < 0 {
 		return less
 	} else if num == 0 {
 		return equal
-	} else {
-		return larger
 	}
+
+	return larger
 }
 
+
+// fixPosition returns robust index, that is inside the slice bounds
 func fixPosition(pos, ableMax int) int {
 	if pos < 0 {
 		return 0
 	} else if pos > ableMax {
 		return ableMax
-	} else {
-		return pos
 	}
+
+	return pos
 }
 
+// fixNumber returns fixed float64 number we able to use in calculations
 func fixNumber(num float64) float64 {
 	if math.IsNaN(num) {
 		return 0
@@ -761,7 +777,7 @@ func fixNumber(num float64) float64 {
 		return math.MinInt64
 	} else if math.IsInf(num, 1) {
 		return math.MaxInt64
-	} else {
-		return num
 	}
+
+	return num
 }
