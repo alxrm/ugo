@@ -204,9 +204,9 @@ func TestMultipleValues(t *testing.T) {
 	evenCallback := func(cur, _, _ Object) Object {
 		if cur.(int)%2 == 0 {
 			return "even"
-		} else {
-			return "odd"
 		}
+
+		return "odd"
 	}
 
 	g.Describe("#Each()", func() {
