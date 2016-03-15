@@ -88,19 +88,19 @@ func TestSingleValues(t *testing.T) {
 
 	g.Describe("#Foldl()", func() {
 		g.It("Should clone #Reduce behaviour", func() {
-			g.Assert(Foldl(inSeq, reduceCollector, 0)).Equal(186)
-			g.Assert(Foldl(inSeq, reduceCollector, nil)).Equal(186)
-			g.Assert(Foldl(inSeq, nil, nil)).Equal(nil)
-			g.Assert(Foldl(nil, nil, nil)).Equal(nil)
+			g.Assert(FoldL(inSeq, reduceCollector, 0)).Equal(186)
+			g.Assert(FoldL(inSeq, reduceCollector, nil)).Equal(186)
+			g.Assert(FoldL(inSeq, nil, nil)).Equal(nil)
+			g.Assert(FoldL(nil, nil, nil)).Equal(nil)
 		})
 	})
 
 	g.Describe("#Foldr()", func() {
 		g.It("Should clone #ReduceRight behaviour", func() {
-			g.Assert(Foldr(inSeq, reduceCollector, 0)).Equal(186)
-			g.Assert(Foldr(inSeq, reduceCollector, nil)).Equal(186)
-			g.Assert(Foldr(inSeq, nil, nil)).Equal(nil)
-			g.Assert(Foldr(nil, nil, nil)).Equal(nil)
+			g.Assert(FoldR(inSeq, reduceCollector, 0)).Equal(186)
+			g.Assert(FoldR(inSeq, reduceCollector, nil)).Equal(186)
+			g.Assert(FoldR(inSeq, nil, nil)).Equal(nil)
+			g.Assert(FoldR(nil, nil, nil)).Equal(nil)
 		})
 	})
 
@@ -199,7 +199,6 @@ func TestSingleValues(t *testing.T) {
 		})
 	})
 
-
 	g.Describe("#Includes()", func() {
 		g.It("Should clone #Contains behaviour", func() {
 			g.Assert(Includes(inSeq, 7, true, intComparator)).IsTrue()
@@ -293,7 +292,6 @@ func TestMultipleValues(t *testing.T) {
 
 		})
 	})
-
 
 	g.Describe("#ForEach()()", func() {
 		g.It("Should clone #Each behaviour", func() {
