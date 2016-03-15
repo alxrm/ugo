@@ -35,9 +35,9 @@ type Wire interface {
 	FoldL(cb Collector, initial Object) Wire
 	ReduceRight(cb Collector, initial Object) Wire
 	FoldR(cb Collector, initial Object) Wire
-	Min(cb Comparator) Wire
-	Max(cb Comparator) Wire
-	Find(cb Predicate) Wire
+	Min(cb Comparator) Wire // tested
+	Max(cb Comparator) Wire // tested
+	Find(cb Predicate) Wire //
 	Detect(cb Predicate) Wire
 	FindLast(cb Predicate) Wire
 	FindIndex(cb Predicate) Wire
@@ -69,246 +69,248 @@ type Wire interface {
 	Value() Object
 }
 
-type chainWrapper struct {
-	mid Seq
-	res Object
+// ChainWrapper is the special struct,
+// containing resulting and middleware data
+type ChainWrapper struct {
+	Mid Seq // Mid is for middleware calculations
+	Res Object // Res if for resulting data
 }
 
-func (wrapper *chainWrapper) Each(cb Action) Wire {
-	Each(wrapper.mid, cb)
+func (wrapper *ChainWrapper) Each(cb Action) Wire {
+	Each(wrapper.Mid, cb)
 	return Wire(wrapper)
 }
 
-func (wrapper *chainWrapper) ForEach(cb Action) Wire {
+func (wrapper *ChainWrapper) ForEach(cb Action) Wire {
 	return wrapper.Each(cb)
 }
 
-func (wrapper *chainWrapper) Map(cb Callback) Wire {
-	wrapper.mid = Map(wrapper.mid, cb)
-	wrapper.res = wrapper.mid
+func (wrapper *ChainWrapper) Map(cb Callback) Wire {
+	wrapper.Mid = Map(wrapper.Mid, cb)
+	wrapper.Res = wrapper.Mid
 	return Wire(wrapper)
 }
 
-func (wrapper *chainWrapper) Collect(cb Callback) Wire {
+func (wrapper *ChainWrapper) Collect(cb Callback) Wire {
 	return wrapper.Map(cb)
 }
 
-func (wrapper *chainWrapper) Filter(cb Predicate) Wire {
-	wrapper.mid = Filter(wrapper.mid, cb)
-	wrapper.res = wrapper.mid
+func (wrapper *ChainWrapper) Filter(cb Predicate) Wire {
+	wrapper.Mid = Filter(wrapper.Mid, cb)
+	wrapper.Res = wrapper.Mid
 	return Wire(wrapper)
 }
 
-func (wrapper *chainWrapper) Select(cb Predicate) Wire {
+func (wrapper *ChainWrapper) Select(cb Predicate) Wire {
 	return wrapper.Filter(cb)
 }
 
-func (wrapper *chainWrapper) Reject(cb Predicate) Wire {
-	wrapper.mid = Reject(wrapper.mid, cb)
-	wrapper.res = wrapper.mid
+func (wrapper *ChainWrapper) Reject(cb Predicate) Wire {
+	wrapper.Mid = Reject(wrapper.Mid, cb)
+	wrapper.Res = wrapper.Mid
 	return Wire(wrapper)
 }
 
-func (wrapper *chainWrapper) Reduce(cb Collector, initial Object) Wire {
-	wrapper.res = Reduce(wrapper.mid, cb, initial)
-	wrapper.mid = nil
+func (wrapper *ChainWrapper) Reduce(cb Collector, initial Object) Wire {
+	wrapper.Res = Reduce(wrapper.Mid, cb, initial)
+	wrapper.Mid = nil
 	return Wire(wrapper)
 }
 
-func (wrapper *chainWrapper) Inject(cb Collector, initial Object) Wire {
+func (wrapper *ChainWrapper) Inject(cb Collector, initial Object) Wire {
 	return wrapper.Reduce(cb, initial)
 }
 
-func (wrapper *chainWrapper) FoldL(cb Collector, initial Object) Wire {
+func (wrapper *ChainWrapper) FoldL(cb Collector, initial Object) Wire {
 	return wrapper.Reduce(cb, initial)
 }
 
-func (wrapper *chainWrapper) ReduceRight(cb Collector, initial Object) Wire {
-	wrapper.res = ReduceRight(wrapper.mid, cb, initial)
-	wrapper.mid = nil
+func (wrapper *ChainWrapper) ReduceRight(cb Collector, initial Object) Wire {
+	wrapper.Res = ReduceRight(wrapper.Mid, cb, initial)
+	wrapper.Mid = nil
 	return Wire(wrapper)
 }
 
-func (wrapper *chainWrapper) FoldR(cb Collector, initial Object) Wire {
+func (wrapper *ChainWrapper) FoldR(cb Collector, initial Object) Wire {
 	return wrapper.ReduceRight(cb, initial)
 }
 
-func (wrapper *chainWrapper) Min(cb Comparator) Wire {
-	wrapper.res = Min(wrapper.mid, cb)
-	wrapper.mid = nil
+func (wrapper *ChainWrapper) Min(cb Comparator) Wire {
+	wrapper.Res = Min(wrapper.Mid, cb)
+	wrapper.Mid = nil
 	return Wire(wrapper)
 }
 
-func (wrapper *chainWrapper) Max(cb Comparator) Wire {
-	wrapper.res = Max(wrapper.mid, cb)
-	wrapper.mid = nil
+func (wrapper *ChainWrapper) Max(cb Comparator) Wire {
+	wrapper.Res = Max(wrapper.Mid, cb)
+	wrapper.Mid = nil
 	return Wire(wrapper)
 }
 
-func (wrapper *chainWrapper) Find(cb Predicate) Wire {
-	wrapper.res = Find(wrapper.mid, cb)
-	wrapper.mid = nil
+func (wrapper *ChainWrapper) Find(cb Predicate) Wire {
+	wrapper.Res = Find(wrapper.Mid, cb)
+	wrapper.Mid = nil
 	return Wire(wrapper)
 }
 
-func (wrapper *chainWrapper) Detect(cb Predicate) Wire {
+func (wrapper *ChainWrapper) Detect(cb Predicate) Wire {
 	return wrapper.Find(cb)
 }
 
-func (wrapper *chainWrapper) FindLast(cb Predicate) Wire {
-	wrapper.res = FindLast(wrapper.mid, cb)
-	wrapper.mid = nil
+func (wrapper *ChainWrapper) FindLast(cb Predicate) Wire {
+	wrapper.Res = FindLast(wrapper.Mid, cb)
+	wrapper.Mid = nil
 	return Wire(wrapper)
 }
 
-func (wrapper *chainWrapper) FindIndex(cb Predicate) Wire {
-	wrapper.res = FindIndex(wrapper.mid, cb)
-	wrapper.mid = nil
+func (wrapper *ChainWrapper) FindIndex(cb Predicate) Wire {
+	wrapper.Res = FindIndex(wrapper.Mid, cb)
+	wrapper.Mid = nil
 	return Wire(wrapper)
 }
 
-func (wrapper *chainWrapper) FindLastIndex(cb Predicate) Wire {
-	wrapper.res = FindLastIndex(wrapper.mid, cb)
-	wrapper.mid = nil
+func (wrapper *ChainWrapper) FindLastIndex(cb Predicate) Wire {
+	wrapper.Res = FindLastIndex(wrapper.Mid, cb)
+	wrapper.Mid = nil
 	return Wire(wrapper)
 }
 
-func (wrapper *chainWrapper) Some(cb Predicate) Wire {
-	wrapper.res = Some(wrapper.mid, cb)
-	wrapper.mid = nil
+func (wrapper *ChainWrapper) Some(cb Predicate) Wire {
+	wrapper.Res = Some(wrapper.Mid, cb)
+	wrapper.Mid = nil
 	return Wire(wrapper)
 }
 
-func (wrapper *chainWrapper) Any(cb Predicate) Wire {
+func (wrapper *ChainWrapper) Any(cb Predicate) Wire {
 	return wrapper.Some(cb)
 }
 
-func (wrapper *chainWrapper) IndexOf(target Object, isSorted bool, cb Comparator) Wire {
-	wrapper.res = IndexOf(wrapper.mid, target, isSorted, cb)
-	wrapper.mid = nil
+func (wrapper *ChainWrapper) IndexOf(target Object, isSorted bool, cb Comparator) Wire {
+	wrapper.Res = IndexOf(wrapper.Mid, target, isSorted, cb)
+	wrapper.Mid = nil
 	return Wire(wrapper)
 }
 
-func (wrapper *chainWrapper) LastIndexOf(target Object, cb Comparator) Wire {
-	wrapper.res = LastIndexOf(wrapper.mid, target, cb)
-	wrapper.mid = nil
+func (wrapper *ChainWrapper) LastIndexOf(target Object, cb Comparator) Wire {
+	wrapper.Res = LastIndexOf(wrapper.Mid, target, cb)
+	wrapper.Mid = nil
 	return Wire(wrapper)
 }
 
-func (wrapper *chainWrapper) Contains(target Object, isSorted bool, cb Comparator) Wire {
-	wrapper.res = Contains(wrapper.mid, target, isSorted, cb)
-	wrapper.mid = nil
+func (wrapper *ChainWrapper) Contains(target Object, isSorted bool, cb Comparator) Wire {
+	wrapper.Res = Contains(wrapper.Mid, target, isSorted, cb)
+	wrapper.Mid = nil
 	return Wire(wrapper)
 }
 
-func (wrapper *chainWrapper) Includes(target Object, isSorted bool, cb Comparator) Wire {
+func (wrapper *ChainWrapper) Includes(target Object, isSorted bool, cb Comparator) Wire {
 	return wrapper.Contains(target, isSorted, cb)
 }
 
-func (wrapper *chainWrapper) Every(cb Predicate) Wire {
-	wrapper.res = Every(wrapper.mid, cb)
-	wrapper.mid = nil
+func (wrapper *ChainWrapper) Every(cb Predicate) Wire {
+	wrapper.Res = Every(wrapper.Mid, cb)
+	wrapper.Mid = nil
 	return Wire(wrapper)
 }
 
-func (wrapper *chainWrapper) All(cb Predicate) Wire {
+func (wrapper *ChainWrapper) All(cb Predicate) Wire {
 	return wrapper.Every(cb)
 }
 
-func (wrapper *chainWrapper) Uniq(cb Comparator) Wire {
-	wrapper.mid = Uniq(wrapper.mid, cb)
-	wrapper.res = wrapper.mid
+func (wrapper *ChainWrapper) Uniq(cb Comparator) Wire {
+	wrapper.Mid = Uniq(wrapper.Mid, cb)
+	wrapper.Res = wrapper.Mid
 	return Wire(wrapper)
 }
 
-func (wrapper *chainWrapper) Unique(cb Comparator) Wire {
+func (wrapper *ChainWrapper) Unique(cb Comparator) Wire {
 	return wrapper.Uniq(cb)
 }
 
-func (wrapper *chainWrapper) Difference(other Seq, cb Comparator) Wire {
-	wrapper.mid = Difference(wrapper.mid, other, cb)
-	wrapper.res = wrapper.mid
+func (wrapper *ChainWrapper) Difference(other Seq, cb Comparator) Wire {
+	wrapper.Mid = Difference(wrapper.Mid, other, cb)
+	wrapper.Res = wrapper.Mid
 	return Wire(wrapper)
 }
 
-func (wrapper *chainWrapper) Without(nonGrata Object, cb Comparator) Wire {
-	wrapper.mid = Without(wrapper.mid, nonGrata, cb)
-	wrapper.res = wrapper.mid
+func (wrapper *ChainWrapper) Without(nonGrata Object, cb Comparator) Wire {
+	wrapper.Mid = Without(wrapper.Mid, nonGrata, cb)
+	wrapper.Res = wrapper.Mid
 	return Wire(wrapper)
 }
 
-func (wrapper *chainWrapper) Intersection(other Seq, cb Comparator) Wire {
-	wrapper.mid = Intersection(wrapper.mid, other, cb)
-	wrapper.res = wrapper.mid
+func (wrapper *ChainWrapper) Intersection(other Seq, cb Comparator) Wire {
+	wrapper.Mid = Intersection(wrapper.Mid, other, cb)
+	wrapper.Res = wrapper.Mid
 	return Wire(wrapper)
 }
 
-func (wrapper *chainWrapper) Union(other Seq, cb Comparator) Wire {
-	wrapper.mid = Union(wrapper.mid, other, cb)
-	wrapper.res = wrapper.mid
+func (wrapper *ChainWrapper) Union(other Seq, cb Comparator) Wire {
+	wrapper.Mid = Union(wrapper.Mid, other, cb)
+	wrapper.Res = wrapper.Mid
 	return Wire(wrapper)
 }
 
-func (wrapper *chainWrapper) SortBy(cb Comparator) Wire {
-	wrapper.mid = SortBy(wrapper.mid, cb)
-	wrapper.res = wrapper.mid
+func (wrapper *ChainWrapper) SortBy(cb Comparator) Wire {
+	wrapper.Mid = SortBy(wrapper.Mid, cb)
+	wrapper.Res = wrapper.Mid
 	return Wire(wrapper)
 }
 
-func (wrapper *chainWrapper) CountBy(cb Callback) Wire {
-	wrapper.res = CountBy(wrapper.mid, cb)
-	wrapper.mid = nil
+func (wrapper *ChainWrapper) CountBy(cb Callback) Wire {
+	wrapper.Res = CountBy(wrapper.Mid, cb)
+	wrapper.Mid = nil
 	return Wire(wrapper)
 }
 
-func (wrapper *chainWrapper) GroupBy(cb Callback) Wire {
-	wrapper.res = GroupBy(wrapper.mid, cb)
-	wrapper.mid = nil
+func (wrapper *ChainWrapper) GroupBy(cb Callback) Wire {
+	wrapper.Res = GroupBy(wrapper.Mid, cb)
+	wrapper.Mid = nil
 	return Wire(wrapper)
 }
 
-func (wrapper *chainWrapper) Remove(pos int) Wire {
-	wrapper.mid = Remove(wrapper.mid, pos)
-	wrapper.res = wrapper.mid
+func (wrapper *ChainWrapper) Remove(pos int) Wire {
+	wrapper.Mid = Remove(wrapper.Mid, pos)
+	wrapper.Res = wrapper.Mid
 	return Wire(wrapper)
 }
 
-func (wrapper *chainWrapper) Insert(tg Object, pos int) Wire {
-	wrapper.mid = Insert(wrapper.mid, tg, pos)
-	wrapper.res = wrapper.mid
+func (wrapper *ChainWrapper) Insert(tg Object, pos int) Wire {
+	wrapper.Mid = Insert(wrapper.Mid, tg, pos)
+	wrapper.Res = wrapper.Mid
 	return Wire(wrapper)
 }
 
-func (wrapper *chainWrapper) Concat(next Seq) Wire {
-	wrapper.mid = Concat(wrapper.mid, next)
-	wrapper.res = wrapper.mid
+func (wrapper *ChainWrapper) Concat(next Seq) Wire {
+	wrapper.Mid = Concat(wrapper.Mid, next)
+	wrapper.Res = wrapper.Mid
 	return Wire(wrapper)
 }
 
-func (wrapper *chainWrapper) Shuffle() Wire {
-	wrapper.mid = ShuffledCopy(wrapper.mid)
-	wrapper.res = wrapper.mid
+func (wrapper *ChainWrapper) Shuffle() Wire {
+	wrapper.Mid = ShuffledCopy(wrapper.Mid)
+	wrapper.Res = wrapper.Mid
 	return Wire(wrapper)
 }
 
-func (wrapper *chainWrapper) Reverse() Wire {
-	wrapper.mid = ReversedCopy(wrapper.mid)
-	wrapper.res = wrapper.mid
+func (wrapper *ChainWrapper) Reverse() Wire {
+	wrapper.Mid = ReversedCopy(wrapper.Mid)
+	wrapper.Res = wrapper.Mid
 	return Wire(wrapper)
 }
 
-func (wrapper *chainWrapper) EqualsStrict(other Seq, cb Comparator) Wire {
-	wrapper.res = EqualsStrict(wrapper.mid, other, cb)
-	wrapper.mid = nil
+func (wrapper *ChainWrapper) EqualsStrict(other Seq, cb Comparator) Wire {
+	wrapper.Res = EqualsStrict(wrapper.Mid, other, cb)
+	wrapper.Mid = nil
 	return Wire(wrapper)
 }
 
-func (wrapper *chainWrapper) EqualsNotStrict(other Seq, cb Comparator) Wire {
-	wrapper.res = EqualsNotStrict(wrapper.mid, other, cb)
-	wrapper.mid = nil
+func (wrapper *ChainWrapper) EqualsNotStrict(other Seq, cb Comparator) Wire {
+	wrapper.Res = EqualsNotStrict(wrapper.Mid, other, cb)
+	wrapper.Mid = nil
 	return Wire(wrapper)
 }
 
-func (wrapper *chainWrapper) Value() Object {
-	return wrapper.res
+func (wrapper *ChainWrapper) Value() Object {
+	return wrapper.Res
 }

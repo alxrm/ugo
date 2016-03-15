@@ -23,7 +23,7 @@
 package ugo_test
 
 import (
-	. "github.com/alxrm/ugo"
+	. "../ugo"
 	. "github.com/franela/goblin"
 	"math"
 	"testing"
@@ -618,6 +618,22 @@ func TestUtils(t *testing.T) {
 			g.Assert(From([]string{"fst", "snd"}, -1)).Equal(Seq{})
 			g.Assert(From("non slice", 2)).Equal(Seq{})
 			g.Assert(From(nil, 0)).Equal(Seq{})
+		})
+	})
+}
+
+func TestChaining(t *testing.T) {
+	g := Goblin(t)
+
+	emptyWrapper := &ChainWrapper{Mid:Seq{}, Res:Seq{}}
+	chWrapper := &ChainWrapper{Mid:Seq{"fst", "snd"}, Res:Seq{"fst", "snd"}}
+
+	g.Describe("#Chain()", func() {
+		g.It("Should return Wire interface, which provides chaining syntax", func() {
+			g.Assert(Chain(Seq{"fst", "snd"})).Equal(chWrapper)
+			g.Assert(Chain(Seq{"fst", "snd"}).Value()).Equal(Seq{"fst", "snd"})
+			g.Assert(Chain(nil)).Equal(emptyWrapper)
+			g.Assert(Chain(nil).Value()).Equal(Seq{})
 		})
 	})
 }

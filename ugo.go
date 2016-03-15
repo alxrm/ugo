@@ -124,7 +124,10 @@ const (
 // Chain method is a start point for chaining behaviour
 // like that: u.Chain(Seq).Map(...).Filter(...).Reduce(...).Value()
 func Chain(target Seq) Wire {
-	return Wire(&chainWrapper{mid: target, res: target})
+	if IsEmpty(target) {
+		target = Seq{}
+	}
+	return Wire(&ChainWrapper{Mid: target, Res: target})
 }
 
 // NewSeq creates a new Seq instance with given size
