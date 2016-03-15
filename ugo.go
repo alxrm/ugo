@@ -121,8 +121,10 @@ const (
 	larger = 1
 )
 
-func Chain(target Seq) wire {
-	return wire(&chainWrapper{ mid: target, res: target })
+// Chain method is a start point for chaining behaviour
+// like that: u.Chain(Seq).Map(...).Filter(...).Reduce(...).Value()
+func Chain(target Seq) Wire {
+	return Wire(&chainWrapper{mid: target, res: target})
 }
 
 // NewSeq creates a new Seq instance with given size
@@ -142,7 +144,7 @@ func Each(seq Seq, cb Action) {
 
 // ForEach is an alias for Each (see #Each)
 func ForEach(seq Seq, cb Action) {
-	Each(seq, cb);
+	Each(seq, cb)
 }
 
 // Map creates new slice same size, every element is the result of Callback
@@ -166,7 +168,7 @@ func Map(seq Seq, cb Callback) Seq {
 
 // Collect is an alias for Map (see #Map)
 func Collect(seq Seq, cb Callback) Seq {
-	return Map(seq, cb);
+	return Map(seq, cb)
 }
 
 // Filter creates new slice, contains only elements that passed Predicate check
@@ -190,8 +192,8 @@ func Filter(seq Seq, cb Predicate) Seq {
 }
 
 // Select is an alias for Filter (see #Filter)
-func Select(seq Seq, cb Predicate) Object {
-	return Filter(seq, cb);
+func Select(seq Seq, cb Predicate) Seq {
+	return Filter(seq, cb)
 }
 
 // Reject creates new slice, contains only elements that haven't passed Predicate check
@@ -227,12 +229,12 @@ func Reduce(seq Seq, cb Collector, initial Object) Object {
 
 // Inject is an alias for Reduce (see #Reduce)
 func Inject(seq Seq, cb Collector, initial Object) Object {
-	return Reduce(seq, cb, initial);
+	return Reduce(seq, cb, initial)
 }
 
-// Foldl is an alias for Reduce (see #Reduce)
-func Foldl(seq Seq, cb Collector, initial Object) Object {
-	return Reduce(seq, cb, initial);
+// FoldL is an alias for Reduce (see #Reduce)
+func FoldL(seq Seq, cb Collector, initial Object) Object {
+	return Reduce(seq, cb, initial)
 }
 
 // ReduceRight makes single value from all of the slice elements, iterating from right
@@ -254,9 +256,9 @@ func ReduceRight(seq Seq, cb Collector, initial Object) Object {
 	return createReduce(seq, cb, memo, length, toMin, length)
 }
 
-// Foldr is an alias for Reduce (see #ReduceRight)
-func Foldr(seq Seq, cb Collector, initial Object) Object {
-	return ReduceRight(seq, cb, initial);
+// FoldR is an alias for Reduce (see #ReduceRight)
+func FoldR(seq Seq, cb Collector, initial Object) Object {
+	return ReduceRight(seq, cb, initial)
 }
 
 // Min returns min value from slice, calculated in comparator
@@ -278,7 +280,7 @@ func Find(seq Seq, cb Predicate) Object {
 
 // Detect is an alias for Find (see #Find)
 func Detect(seq Seq, cb Predicate) Object {
-	return Find(seq, cb);
+	return Find(seq, cb)
 }
 
 // FindLast returns last found value, passed the predicate check
@@ -309,7 +311,7 @@ func Some(seq Seq, cb Predicate) bool {
 
 // Any is an alias for Some (see #Some)
 func Any(seq Seq, cb Predicate) bool {
-	return Some(seq, cb);
+	return Some(seq, cb)
 }
 
 // IndexOf founds index of the first element, which equals to passed one(target)
@@ -348,7 +350,7 @@ func Contains(seq Seq, target Object, isSorted bool, cb Comparator) bool {
 
 // Includes is an alias for Contains (see #Contains)
 func Includes(seq Seq, target Object, isSorted bool, cb Comparator) bool {
-	return Contains(seq, target, isSorted, cb);
+	return Contains(seq, target, isSorted, cb)
 }
 
 // Every returns true if every element in slice have passed the predicate test
@@ -367,7 +369,7 @@ func Every(seq Seq, cb Predicate) bool {
 
 // All is an alias for Every (see #Every)
 func All(seq Seq, cb Predicate) bool {
-	return Every(seq, cb);
+	return Every(seq, cb)
 }
 
 // Uniq returns slice, which contains only unique elements, calculated by Comparator
@@ -386,6 +388,11 @@ func Uniq(seq Seq, cb Comparator) Seq {
 		}
 	}
 	return result
+}
+
+// Unique is an alias for Uniq (see #Uniq)
+func Unique(seq Seq, cb Comparator) Seq {
+	return Uniq(seq, cb)
 }
 
 // Difference returns the values from slice that are not present in the other slice
@@ -517,7 +524,7 @@ func GroupBy(seq Seq, cb Callback) map[Object]Seq {
 		length = len(result[key])
 
 		if length == 0 {
-			result[key] = Seq{ val }
+			result[key] = Seq{val}
 		} else {
 			result[key] = Insert(result[key], val, length)
 		}

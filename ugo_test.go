@@ -77,12 +77,48 @@ func TestSingleValues(t *testing.T) {
 		})
 	})
 
+	g.Describe("#Inject()", func() {
+		g.It("Should clone #Reduce behaviour", func() {
+			g.Assert(Inject(inSeq, reduceCollector, 0)).Equal(186)
+			g.Assert(Inject(inSeq, reduceCollector, nil)).Equal(186)
+			g.Assert(Inject(inSeq, nil, nil)).Equal(nil)
+			g.Assert(Inject(nil, nil, nil)).Equal(nil)
+		})
+	})
+
+	g.Describe("#Foldl()", func() {
+		g.It("Should clone #Reduce behaviour", func() {
+			g.Assert(Foldl(inSeq, reduceCollector, 0)).Equal(186)
+			g.Assert(Foldl(inSeq, reduceCollector, nil)).Equal(186)
+			g.Assert(Foldl(inSeq, nil, nil)).Equal(nil)
+			g.Assert(Foldl(nil, nil, nil)).Equal(nil)
+		})
+	})
+
+	g.Describe("#Foldr()", func() {
+		g.It("Should clone #ReduceRight behaviour", func() {
+			g.Assert(Foldr(inSeq, reduceCollector, 0)).Equal(186)
+			g.Assert(Foldr(inSeq, reduceCollector, nil)).Equal(186)
+			g.Assert(Foldr(inSeq, nil, nil)).Equal(nil)
+			g.Assert(Foldr(nil, nil, nil)).Equal(nil)
+		})
+	})
+
 	g.Describe("#Find()", func() {
 		g.It("Should return first value, which passes predicate test", func() {
 			g.Assert(Find(inSeq, searchPredicate)).Equal(8)
 			g.Assert(Find(nil, searchPredicate)).Equal(nil)
 			g.Assert(Find(inSeq, nil)).Equal(nil)
 			g.Assert(Find(nil, nil)).Equal(nil)
+		})
+	})
+
+	g.Describe("#Detect()", func() {
+		g.It("Should clone #Find behaviour", func() {
+			g.Assert(Detect(inSeq, searchPredicate)).Equal(8)
+			g.Assert(Detect(nil, searchPredicate)).Equal(nil)
+			g.Assert(Detect(inSeq, nil)).Equal(nil)
+			g.Assert(Detect(nil, nil)).Equal(nil)
 		})
 	})
 
@@ -122,6 +158,15 @@ func TestSingleValues(t *testing.T) {
 		})
 	})
 
+	g.Describe("#Any()", func() {
+		g.It("Should clone #Some behaviour", func() {
+			g.Assert(Any(inSeq, searchPredicate)).IsTrue()
+			g.Assert(Any(nil, searchPredicate)).IsFalse()
+			g.Assert(Any(inSeq, nil)).IsFalse()
+			g.Assert(Any(nil, nil)).IsFalse()
+		})
+	})
+
 	g.Describe("#Every()", func() {
 		g.It("Should return true if all of the elements have passed the predicate test", func() {
 			g.Assert(Every(inSeq, searchPredicate)).IsFalse()
@@ -129,6 +174,16 @@ func TestSingleValues(t *testing.T) {
 			g.Assert(Every(nil, searchPredicate)).IsFalse()
 			g.Assert(Every(inSeq, nil)).IsFalse()
 			g.Assert(Every(nil, nil)).IsFalse()
+		})
+	})
+
+	g.Describe("#All()", func() {
+		g.It("Should clone #Every behaviour", func() {
+			g.Assert(All(inSeq, searchPredicate)).IsFalse()
+			g.Assert(All(inSeqDifElems, searchPredicate)).IsTrue()
+			g.Assert(All(nil, searchPredicate)).IsFalse()
+			g.Assert(All(inSeq, nil)).IsFalse()
+			g.Assert(All(nil, nil)).IsFalse()
 		})
 	})
 
@@ -141,6 +196,19 @@ func TestSingleValues(t *testing.T) {
 			g.Assert(Contains(inSeqDifOrder, 88, false, nil)).IsFalse()
 			g.Assert(Contains(nil, 0, false, intComparator)).IsFalse()
 			g.Assert(Contains(nil, 0, false, nil)).IsFalse()
+		})
+	})
+
+
+	g.Describe("#Includes()", func() {
+		g.It("Should clone #Contains behaviour", func() {
+			g.Assert(Includes(inSeq, 7, true, intComparator)).IsTrue()
+			g.Assert(Includes(inSeq, 88, true, intComparator)).IsFalse()
+			g.Assert(Includes(inSeqDifOrder, 7, false, intComparator)).IsTrue()
+			g.Assert(Includes(inSeqDifOrder, 88, false, intComparator)).IsFalse()
+			g.Assert(Includes(inSeqDifOrder, 88, false, nil)).IsFalse()
+			g.Assert(Includes(nil, 0, false, intComparator)).IsFalse()
+			g.Assert(Includes(nil, 0, false, nil)).IsFalse()
 		})
 	})
 
@@ -226,6 +294,23 @@ func TestMultipleValues(t *testing.T) {
 		})
 	})
 
+
+	g.Describe("#ForEach()()", func() {
+		g.It("Should clone #Each behaviour", func() {
+			inSeq := Seq{2, 4, 6, 7, 8, 10, 120, 10, 2, 17}
+			outSeqResult := NewSeq(len(inSeq))
+			outSeqTest := Seq{4, 16, 36, 49, 64, 100, 14400, 100, 4, 289}
+			powAction := func(cur, index, _ Object) { outSeqResult[index.(int)] = cur.(int) * cur.(int) }
+
+			ForEach(inSeq, powAction)
+			g.Assert(outSeqResult).Equal(outSeqTest)
+
+			ForEach(inSeq, nil)
+			ForEach(nil, powAction)
+			ForEach(nil, nil)
+		})
+	})
+
 	g.Describe("#Map()", func() {
 		g.It("Should return changed elements", func() {
 			inSeq := Seq{2, 4, 6, 7, 8, 10, 120, 10, 2, 17}
@@ -239,6 +324,19 @@ func TestMultipleValues(t *testing.T) {
 		})
 	})
 
+	g.Describe("#Collect()", func() {
+		g.It("Should clone #Map behaviour", func() {
+			inSeq := Seq{2, 4, 6, 7, 8, 10, 120, 10, 2, 17}
+			outSeqChanged := Seq{0, 2, 4, 5, 6, 8, 118, 8, 0, 15}
+			empty := Seq{}
+
+			g.Assert(Collect(inSeq, changingCallback)).Equal(outSeqChanged)
+			g.Assert(Collect(nil, changingCallback)).Equal(empty)
+			g.Assert(Collect(inSeq, nil)).Equal(inSeq)
+			g.Assert(Collect(nil, nil)).Equal(empty)
+		})
+	})
+
 	g.Describe("#Filter()", func() {
 		g.It("Should return filtered elements", func() {
 			inSeq := Seq{2, 4, 6, 7, 8, 10, 120, 10, 2, 17}
@@ -249,6 +347,19 @@ func TestMultipleValues(t *testing.T) {
 			g.Assert(Filter(inSeq, nil)).Equal(inSeq)
 			g.Assert(Filter(nil, evenPredicate)).Equal(empty)
 			g.Assert(Filter(nil, nil)).Equal(empty)
+		})
+	})
+
+	g.Describe("#Select()", func() {
+		g.It("Should clone #Filter behaviour", func() {
+			inSeq := Seq{2, 4, 6, 7, 8, 10, 120, 10, 2, 17}
+			outSeqFiltered := Seq{2, 4, 6, 8, 10, 120, 10, 2}
+			empty := Seq{}
+
+			g.Assert(Select(inSeq, evenPredicate)).Equal(outSeqFiltered)
+			g.Assert(Select(inSeq, nil)).Equal(inSeq)
+			g.Assert(Select(nil, evenPredicate)).Equal(empty)
+			g.Assert(Select(nil, nil)).Equal(empty)
 		})
 	})
 
