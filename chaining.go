@@ -30,26 +30,26 @@ type Wire interface {
 	Each(cb Action) Wire
 	ForEach(cb Action) Wire
 	Reject(cb Predicate) Wire
-	Reduce(cb Collector, initial Object) Wire
-	Inject(cb Collector, initial Object) Wire
-	FoldL(cb Collector, initial Object) Wire
-	ReduceRight(cb Collector, initial Object) Wire
-	FoldR(cb Collector, initial Object) Wire
+	Reduce(cb Collector, initial Object) Wire // tested
+	Inject(cb Collector, initial Object) Wire // tested
+	FoldL(cb Collector, initial Object) Wire // tested
+	ReduceRight(cb Collector, initial Object) Wire // tested
+	FoldR(cb Collector, initial Object) Wire // tested
 	Min(cb Comparator) Wire // tested
 	Max(cb Comparator) Wire // tested
-	Find(cb Predicate) Wire //
-	Detect(cb Predicate) Wire
-	FindLast(cb Predicate) Wire
-	FindIndex(cb Predicate) Wire
-	FindLastIndex(cb Predicate) Wire
-	Some(cb Predicate) Wire
-	Any(cb Predicate) Wire
-	IndexOf(target Object, isSorted bool, cb Comparator) Wire
-	LastIndexOf(target Object, cb Comparator) Wire
-	Contains(target Object, isSorted bool, cb Comparator) Wire
-	Includes(target Object, isSorted bool, cb Comparator) Wire
-	Every(cb Predicate) Wire
-	All(cb Predicate) Wire
+	Find(cb Predicate) Wire // tested
+	Detect(cb Predicate) Wire // tested
+	FindLast(cb Predicate) Wire // tested
+	FindIndex(cb Predicate) Wire // tested
+	FindLastIndex(cb Predicate) Wire // tested
+	Some(cb Predicate) Wire // tested
+	Any(cb Predicate) Wire // tested
+	IndexOf(target Object, isSorted bool, cb Comparator) Wire // tested
+	LastIndexOf(target Object, cb Comparator) Wire // tested
+	Contains(target Object, isSorted bool, cb Comparator) Wire // tested
+	Includes(target Object, isSorted bool, cb Comparator) Wire // tested
+	Every(cb Predicate) Wire // tested
+	All(cb Predicate) Wire // tested
 	Uniq(cb Comparator) Wire
 	Unique(cb Comparator) Wire
 	Difference(other Seq, cb Comparator) Wire
@@ -64,8 +64,8 @@ type Wire interface {
 	Concat(next Seq) Wire
 	Shuffle() Wire
 	Reverse() Wire
-	EqualsStrict(other Seq, cb Comparator) Wire
-	EqualsNotStrict(other Seq, cb Comparator) Wire
+	EqualsStrict(other Seq, cb Comparator) Wire // tested
+	EqualsNotStrict(other Seq, cb Comparator) Wire // tested
 	Value() Object
 }
 
