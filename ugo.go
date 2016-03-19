@@ -123,11 +123,11 @@ const (
 
 // Chain method is a start point for chaining behaviour
 // like that: u.Chain(Seq).Map(...).Filter(...).Reduce(...).Value()
-func Chain(target Seq) Wire {
+func Chain(target Seq) *ChainWrapper {
 	if IsEmpty(target) {
 		target = Seq{}
 	}
-	return Wire(&ChainWrapper{Mid: target, Res: target})
+	return &ChainWrapper{Mid: target, Res: target}
 }
 
 // NewSeq creates a new Seq instance with given size
@@ -489,12 +489,12 @@ func SortBy(seq Seq, cb Comparator) Seq {
 // CountBy returns map, which values are count of certain kind of values,
 // and keys are names of this kinds
 func CountBy(seq Seq, cb Callback) (result map[string]int) {
-	if seq == nil || cb == nil {
-		return nil
-	}
-
 	result = make(map[string]int, 0)
 	key := ""
+
+	if seq == nil || cb == nil {
+		return result
+	}
 
 	for index, val := range seq {
 		key = cb(val, index, seq).(string)
@@ -512,15 +512,14 @@ func CountBy(seq Seq, cb Callback) (result map[string]int) {
 // GroupBy returns map, which keys are results of Callback calculation,
 // and the value is the slice of elements, which gave such result
 func GroupBy(seq Seq, cb Callback) map[Object]Seq {
-	var result map[Object]Seq
 	var key Object
 	var length int
 
-	if seq == nil || cb == nil {
-		return nil
-	}
+	result := make(map[Object]Seq, 0)
 
-	result = make(map[Object]Seq, 0)
+	if seq == nil || cb == nil {
+		return result
+	}
 
 	for index, val := range seq {
 		key = cb(val, index, seq)
@@ -538,12 +537,18 @@ func GroupBy(seq Seq, cb Callback) map[Object]Seq {
 
 // Remove takes an element from given position in slice
 func Remove(seq Seq, position int) Seq {
-	if seq == nil {
+	if IsEmpty(seq) {
 		return Seq{}
 	}
 	position = fixPosition(position, len(seq)-1)
 
-	return append(seq[:position], seq[position+1:]...)
+	bef := NewSeq(len(seq[:position]))
+	aft := NewSeq(len(seq[position+1:]))
+
+	copy(bef, seq[:position])
+	copy(aft, seq[position+1:])
+
+	return Concat(bef, aft)
 }
 
 // Insert pushes an element into given position in slice

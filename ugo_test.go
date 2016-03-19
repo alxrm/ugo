@@ -23,7 +23,7 @@
 package ugo_test
 
 import (
-	. "../ugo"
+	. "github.com/alxrm/ugo"
 	. "github.com/franela/goblin"
 	"math"
 	"testing"
@@ -393,9 +393,9 @@ func TestMultipleValues(t *testing.T) {
 			outMapCounted := map[string]int{"even": 8, "odd": 2}
 
 			g.Assert(CountBy(inSeq, evenCallback)).Equal(outMapCounted)
-			g.Assert(CountBy(inSeq, nil)).Equal(map[string]int(nil))
-			g.Assert(CountBy(nil, evenCallback)).Equal(map[string]int(nil))
-			g.Assert(CountBy(nil, nil)).Equal(map[string]int(nil))
+			g.Assert(CountBy(inSeq, nil)).Equal(map[string]int{})
+			g.Assert(CountBy(nil, evenCallback)).Equal(map[string]int{})
+			g.Assert(CountBy(nil, nil)).Equal(map[string]int{})
 		})
 	})
 
@@ -625,8 +625,8 @@ func TestUtils(t *testing.T) {
 func TestChaining(t *testing.T) {
 	g := Goblin(t)
 
-	emptyWrapper := &ChainWrapper{Mid:Seq{}, Res:Seq{}}
-	chWrapper := &ChainWrapper{Mid:Seq{"fst", "snd"}, Res:Seq{"fst", "snd"}}
+	emptyWrapper := &ChainWrapper{Mid: Seq{}, Res: Seq{}}
+	chWrapper := &ChainWrapper{Mid: Seq{"fst", "snd"}, Res: Seq{"fst", "snd"}}
 
 	g.Describe("#Chain()", func() {
 		g.It("Should return Wire interface, which provides chaining syntax", func() {
