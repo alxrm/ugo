@@ -74,6 +74,22 @@ oddsSeq := u.Filter(uniquedSeq, func(cur, _, _ u.Object) bool { return cur.(int)
 fmt.Println(oddsSeq) // [7 9 17]
 ```
 
+Well, sometimes you may want to use many method one by one, and it can be a bit ugly
+
+Here we are, fluent syntax, just like in _underscore.js_ :rocket:
+
+```Go
+initialSeq := u.Seq{ 4, 6, 2, 7, 8, 10, 9, 9, 120, 10, 2, 17 }
+
+res := u.Chain(initialSeq).Uniq(func(l, r u.Object) int {
+	return l.(int) - r.(int)
+}).Filter(func(cur, _, _ u.Object) bool {
+	return cur.(int) % 2 != 0
+}).Value()
+
+fmt.Println(res) // [7 9 17]
+```
+
 ### Try it by yourself! 
 
 Explore all of the features and get your slice routine done faster
@@ -87,7 +103,7 @@ Be welcome :coffee:
 
 __Some of the TODOs:__
 
-- [x]Aliases from underscore
+- [x] Aliases from underscore
 - [x] Chaining like map(...).uniq(...).result()
 - [ ] Better documentation 
 
