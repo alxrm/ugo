@@ -87,8 +87,8 @@ Be welcome :coffee:
 
 __Some of the TODOs:__
 
-- [ ] Aliases from underscore
-- [ ] Chaining like map(...).uniq(...).result()
+- [x]Aliases from underscore
+- [x] Chaining like map(...).uniq(...).result()
 - [ ] Better documentation 
 
 
