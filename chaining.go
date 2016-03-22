@@ -209,7 +209,7 @@ func (wrapper *ChainWrapper) Unique(cb Comparator) *ChainWrapper {
 	return wrapper.Uniq(cb)
 }
 
-// Differenc is a chaining wrapper for #Differenc
+// Difference is a chaining wrapper for #Difference
 func (wrapper *ChainWrapper) Difference(other Seq, cb Comparator) *ChainWrapper {
 	wrapper.Mid = Difference(wrapper.Mid, other, cb)
 	wrapper.Res = wrapper.Mid
