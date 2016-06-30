@@ -1,6 +1,5 @@
 [![GoDoc](https://godoc.org/github.com/alxrm/ugo?status.svg)](https://godoc.org/github.com/alxrm/ugo)
 [![Go Report Card](https://goreportcard.com/badge/github.com/alxrm/ugo)](https://goreportcard.com/report/github.com/alxrm/ugo)
-[![GoCover.io](https://img.shields.io/badge/coverage-99.5%-brightgreen.svg?style=flat)](https://gocover.io/github.com/alxrm/ugo)
 [![Travis CI](https://travis-ci.org/alxrm/ugo.svg?branch=master)](https://travis-ci.org/alxrm/ugo)
 
 # ugo
